@@ -1,3 +1,37 @@
+/* Template Engine by @manufosela - 2015 */
+/* Methods: 
+    validate( val, type )
+    isInt( val )
+    isFloat( val )
+isNumber
+isEmail
+verificaCuentaBancaria
+verificaNumTarjetaCredito
+isAlpha
+isAlphaGuion
+isAlphaNumeric
+isAlphaNumericSpace
+isDate
+checkNumMovil
+checkNumFijo
+checkTelephoneNumber
+checkCodPostal
+checkICCID
+calcDigitoControl2LineaNIF
+valida_nif_cif_nie
+
+FORM METHODS:
+cleanMsgError
+appendHtml
+restoreErrorLayer
+requiredFields
+validateFields
+noEmptyFields
+addWarnMesg
+
+*****/
+
+
 var Validate = (function(){
 
   'use strict';
@@ -297,30 +331,91 @@ var Validate = (function(){
     return 0;
   };
 
-  Validate.prototype.cleanMsgError = function( name ) {
-    if ( !!~name.indexOf( "fn_" ) ) { name = 'fec_nac'; }
-    $( "#"+name+"_msgError_Layer" ).html ( "" );
-    $( "#"+name ).css( { "border-color": "#333" } );
+/**** FORM METHODS  *********/
+  Validate.prototype.cleanMsgError = function( htmlId ) {
+    if ( !!~htmlId.indexOf( "fn_" ) ) { htmlId = 'fec_nac'; }
+    $( "#"+htmlId+"_msgError_Layer" ).html ( "" );
+    $( "#"+htmlId ).css( { "border-color": "#333" } );
   };
 
-  Validate.prototype.appendHtml = function( el, name, msgError, border ) {
+  Validate.prototype.appendHtml = function( el, htmlId, msgError, border ) {
     if ( typeof msgError != "undefined" ) {
       if ( typeof border == "undefined" ) { border = true; }
-      if ( $( "#"+name+"_msgError_Layer" ).length === 0 ) {
-        var htmlMsgError = "<span class='error' id='"+name+"_msgError_Layer'>&nbsp;&nbsp;" + msgError + "</span>";
+      if ( $( "#"+htmlId+"_msgError_Layer" ).length === 0 ) {
+        var htmlMsgError = "<span class='error' id='"+htmlId+"_msgError_Layer'>&nbsp;&nbsp;" + msgError + "</span>";
         el.append( htmlMsgError );
       } else {
-        $( "#"+name+"_msgError_Layer" ).html( msgError );
+        $( "#"+htmlId+"_msgError_Layer" ).html( msgError );
       }
-      if ( border ) { $( "#"+name ).css( { "border": "1px solid #F00" } ); }
+      if ( border ) { $( "#"+htmlId ).css( { "border": "1px solid #F00" } ); }
     }
   };
 
-  Validate.prototype.restoreErrorLayer = function( name ) {
-    if ( $( "#"+name+"_msgError_Layer" ).length !== 0 ) {
-      $( "#"+name+"_msgError_Layer" ).remove();
-      $( "#"+name ).css( { "border": "1px solid #CCC" } );
+  Validate.prototype.restoreErrorLayer = function( htmlId ) {
+    if ( $( "#"+htmlId+"_msgError_Layer" ).length !== 0 ) {
+      $( "#"+htmlId+"_msgError_Layer" ).remove();
+      $( "#"+htmlId ).css( { "border": "1px solid #CCC" } );
     }
+  };
+
+  Validate.prototype.requiredFields = function() {
+    $( "[data-required=true]" ).each( function() {
+      var asterisco = document.createElement( "span" );
+      asterisco.className="asterisco";
+      asterisco.innerHTML="*";
+      $( this ).siblings( "label" ).append( asterisco );
+    });
+  };
+  Validate.prototype.validateFields = function(){
+    var badvalue=0,
+        _this=this;
+    $( "[data-validated]" ).each( function(){
+      var val = $( this ).val(),
+          type = $( this ).attr( "data-validated" );
+      if ( !_this.validate( val, type ) ) {
+        _this.addWarnMesg( $( this ), "valor incorrecto" );
+        badvalue++;
+        $( this ).off("blur").on( "blur", function() { 
+          var val = $( this ).val(),
+              type = $( this ).attr( "data-validated" );
+          if ( _this.validate( val, type ) !== "" ) {
+            var name=$( this ).attr( "name" );
+            $( "#warning-"+name ).remove();
+            $( "[name='"+name+"']" ).removeClass( "warningField" );
+          }
+        });
+      }
+    });
+    return ( badvalue===0 );
+  };
+  Validate.prototype.noEmptyFields = function(){
+    var empty=0,
+        _this=this;
+    $( "[data-required=true]" ).each( function() {
+      var val = $( this ).val(), name=$( this ).attr( "name" );
+      $( "#warning-"+name ).remove();
+      $( this ).removeClass( "warningField" );
+      if ( val === "" ) {
+        _this.addWarnMesg( $( this ), "campo requerido" );
+        empty++;
+        $( this ).off("blur").on( "blur", function() { 
+          if ( $( this ).val() !== "" ) {
+            $( "#warning-"+name ).remove();
+            $( "[name='"+name+"']" ).removeClass( "warningField" );
+          }
+        });
+      }
+    });
+    return ( empty===0 );
+  };
+  Validate.prototype.addWarnMesg = function( el, msg ) {
+    var warning = document.createElement( "div" ),
+        name=el.attr( "name" );
+      warning.className="warning";
+      warning.innerHTML=msg;
+      warning.id="warning-"+name;
+      el.parent().append( warning );
+      el.addClass( "warningField" );
   };
 
   return Validate;
