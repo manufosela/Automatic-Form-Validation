@@ -1,47 +1,42 @@
-/* Template Engine by @manufosela - 2015 */
-/* Methods: 
-    validate( val, type )
-    isInt( val )
-    isFloat( val )
-isNumber
-isEmail
-verificaCuentaBancaria
-verificaNumTarjetaCredito
-isAlpha
-isAlphaGuion
-isAlphaNumeric
-isAlphaNumericSpace
-isDate
-checkNumMovil
-checkNumFijo
-checkTelephoneNumber
-checkCodPostal
-checkICCID
-calcDigitoControl2LineaNIF
-valida_nif_cif_nie
-
-FORM METHODS:
-cleanMsgError
-appendHtml
-restoreErrorLayer
-requiredFields
-validateFields
-noEmptyFields
-addWarnMesg
-
-*****/
-
-
+/* validate.js by @manufosela - 2015 */
+/* IE8+, FF, Chrome */
 var Validate = (function(){
 
   'use strict';
   
   Validate = function() {
+    this.badvalue = 0;
 
+    var _this = this,
+        //dVld = this._getElByAttrVal( { tag:"form", aAttr:"data-validate", aVal:"true" } ),
+        dVld = document.querySelectorAll( "form[data-validate=true]" ),
+        dChk, i = 0, lI = dVld.length, j = 0, lJ, ok,
+        _beforeSubmit = function( e ) {
+          if( e.preventDefault ) { e.preventDefault(); e.stopPropagation(); } else { e.returnValue = false; }
+          e = e || window.event;
+          var target = e.target || e.srcElement,
+              f = target.formParam;
+          if ( _this.noEmptyFields() ) { ok = true; }
+          if ( _this.validateFields() ){ ok = ok && true; }
+          if ( ok ) { _this._triggerEvent( f, "submit" ); }
+          return false;
+        };
+    for( ; i<lI; i++ ) {    
+      //console.log( "add markRequiredFields and checkFieldsRealTime in " + dVld[i].id );
+      this.markRequiredFields( dVld[i] );
+      this.checkFieldsRealTime( dVld[i] );
+      //dChk = this._getElByAttrVal( { element:dVld[i], aAttr:["type","data-checkform"], aVal:["submit","true"] } );
+      dChk = dVld[i].querySelectorAll( "[type=submit][data-checkform=true]" );
+      lJ = dChk.length; ok = false;
+      for ( ; j<lJ; j++ ) {
+        var submitBtn = dChk[j];
+        submitBtn.formParam = dVld[i];
+        this._on( submitBtn, "click", _beforeSubmit);
+      }
+    }
   };
-
   Validate.prototype.validate = function( val, type ) {
-    if ( val === "" && type != "noempty" ) { return true; }
+    if ( val === "" && val === null && type != "noempty" ) { return true; }
     switch( type ) {
       case "int":
       case "integer":
@@ -49,9 +44,12 @@ var Validate = (function(){
       case "float":
         return this.isFloat( val );
       case "number":
+      case "numero":
         return this.isNumber( val );  // integer o float
       case "alpha":
+      case "alfa":
       case "text":
+      case "texto":
         return this.isAlpha( val );
       case "text-":
         return this.isAlphaGuion( val );
@@ -66,9 +64,12 @@ var Validate = (function(){
       case "iccid":
         return this.checkICCID( val );
       case "nummovil":
+      case "movil":
         return this.checkNumMovil( val );
       case "numfijo":
+      case "fijo":
         return this.checkNumFijo( val );
+      case "telefono":
       case "tel": // fijo o movil
         return this.checkTelephoneNumber( val );
       case "cp":
@@ -86,6 +87,8 @@ var Validate = (function(){
       case "selected":
       case "noempty":
         return ( val!=="" );
+      case "checked":
+        return ( $( this ).prop( "checked" ) == "true" );
     }
     return false;
   };
@@ -358,66 +361,335 @@ var Validate = (function(){
     }
   };
 
-  Validate.prototype.requiredFields = function() {
-    $( "[data-required=true]" ).each( function() {
-      var asterisco = document.createElement( "span" );
+  // Put a span with a * in form fields with attribute data-required=true
+  // Is mandatory to have a label tag to append span tag into the label tag
+  Validate.prototype.markRequiredFields = function( f, html ) {
+    if ( typeof f === "undefined" ) { return false; }
+    html = ( typeof html !== "undefined" )? html:"*";
+    var _this = this,
+        //aEl = this._getElByAttrVal( { element:f, aAttr:"data-required", aVal:"true" } ),
+        aEl = f.querySelectorAll("[data-required=true]" ),
+        i = 0, l = aEl.length,
+        asterisco, sb;
+    for( ; i<l; i++ ) {
+      asterisco = document.createElement( "span" );
       asterisco.className="asterisco";
-      asterisco.innerHTML="*";
-      $( this ).siblings( "label" ).append( asterisco );
-    });
+      asterisco.innerHTML=html;
+      sb = _this._getAllSiblings( aEl[i], "LABEL" );
+      sb[0].appendChild( asterisco );
+    }
   };
   Validate.prototype.validateFields = function(){
-    var badvalue=0,
-        _this=this;
-    $( "[data-validated]" ).each( function(){
-      var val = $( this ).val(),
-          type = $( this ).attr( "data-validated" );
-      if ( !_this.validate( val, type ) ) {
-        _this.addWarnMesg( $( this ), "valor incorrecto" );
-        badvalue++;
-        $( this ).off("blur").on( "blur", function() { 
-          var val = $( this ).val(),
-              type = $( this ).attr( "data-validated" );
-          if ( _this.validate( val, type ) !== "" ) {
-            var name=$( this ).attr( "name" );
-            $( "#warning-"+name ).remove();
-            $( "[name='"+name+"']" ).removeClass( "warningField" );
-          }
-        });
-      }
-    });
-    return ( badvalue===0 );
+    this.badvalue=0;
+    var _this=this,
+        //aEl = this._getElByAttrVal( { aAttr:"data-tovalidate" } ),
+        aEl = document.querySelectorAll( "[data-tovalidate]" ),
+        val, type,
+        i = 0, l = aEl.length;
+    for( ; i<l; i++ ) {
+      val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
+      type = aEl[i].getAttribute( "data-tovalidate" ) || "";
+      if ( !_this.validate( val, type ) ) { this.badValue++; }
+    }
+    return ( this.badvalue===0 );
   };
   Validate.prototype.noEmptyFields = function(){
-    var empty=0,
-        _this=this;
-    $( "[data-required=true]" ).each( function() {
-      var val = $( this ).val(), name=$( this ).attr( "name" );
-      $( "#warning-"+name ).remove();
-      $( this ).removeClass( "warningField" );
-      if ( val === "" ) {
-        _this.addWarnMesg( $( this ), "campo requerido" );
-        empty++;
-        $( this ).off("blur").on( "blur", function() { 
-          if ( $( this ).val() !== "" ) {
-            $( "#warning-"+name ).remove();
-            $( "[name='"+name+"']" ).removeClass( "warningField" );
-          }
-        });
+    var _this = this,
+        empty=0,
+        //aEl = this._getElByAttrVal( { aAttr:"data-required", aVal:"true" } ),
+        aEl = document.querySelectorAll( "[data-required=true]" ),
+        val, typeF,
+        i = 0, l = aEl.length;
+    for( ; i<l; i++ ) {
+      val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
+      typeF = aEl[i].getAttribute( "type" ) || aEl[i].type || "";
+      if ( typeF == "radiobutton" || typeF == "checkbox" ) {
+        if ( !aEl[i].checked ) {
+          _this.addWarnMesg( aEl[i], "campo requerido" );
+        }
+      } else if ( val === "" ) { 
+        _this.addWarnMesg( aEl[i], "campo requerido" );
+        empty++; 
       }
-    });
+    }
     return ( empty===0 );
   };
   Validate.prototype.addWarnMesg = function( el, msg ) {
     var warning = document.createElement( "div" ),
-        name=el.attr( "name" );
-      warning.className="warning";
-      warning.innerHTML=msg;
-      warning.id="warning-"+name;
-      el.parent().append( warning );
-      el.addClass( "warningField" );
+        target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
+        name= target.getAttribute( "name" ),
+        id = "warning-"+name;
+      if ( !document.getElementById( id ) ) {
+        el = document.getElementById( target.getAttribute( "id" ) || el.id );
+        warning.className="warning";
+        warning.id=id;
+        warning.innerHTML=msg;        
+        el.parentElement.appendChild( warning );
+        el.setAttribute( "class", "warningField" );
+      }
+  };
+  Validate.prototype.delWarnMesg = function( el ) {
+    var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
+        name= target.getAttribute( "name" ) || "";
+    if ( document.getElementById( "warning-"+name ) ) {
+      target.parentElement.removeChild( document.getElementById( "warning-"+name ) );
+    }
+    this.removeClass( el, "warningField" );
+  };
+  Validate.prototype.hasClass = function( el, cls ) {
+    var regexp = new RegExp( '(\\s|^)' + cls + '(\\s|$)' ),
+        target = ( typeof el.className == "undefined" )?window.event.srcElement:el;
+    return target.className.match( regexp );
+  };
+  Validate.prototype.addClass = function( el, cls ){
+    if( !this.hasClass( el, cls ) ) {
+      var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
+          spc = ( target.className !== "" )?" ":"";
+      target.className+=spc+cls;
+    }
+  };
+  Validate.prototype.removeClass = function( el, cls ) {
+    if( this.hasClass( el, cls ) ) {
+      var regexp = new RegExp( '(\\s|^)' + cls + '(\\s|$)' ),
+          target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement;
+      target.className=target.className.replace( regexp,"");
+    }
+  };
+  Validate.prototype.checkFieldsRealTime = function( f ) {
+    var _this = this,
+        inputF = this._getArrayFromTag( f, "input" ),
+        textareaF = this._getArrayFromTag( f, "textarea" ),
+        selectF = this._getArrayFromTag( f, "select" ),
+        fields = ( typeof textareaF != "undefined" )?inputF.concat( textareaF ):inputF,
+        i = 0, l = fields.length, 
+        el, re, ch, typeF,
+        myfnblur = function( e ) {
+          e = e || window.event;
+          var target = e.target || e.srcElement,
+              val = target.value || target.getAttribute( "value" ) || "",
+              type = target["data-tovalidate"] || target.getAttribute( "data-tovalidate" ) || "",
+              dreq = target["data-required"] || target.getAttribute( "data-required" ) || "",
+              re = ( dreq == "true" ),
+              ch = ( type !== "" ),
+              typeF = target.type || target.getAttribute( "type" ) || "";
+          if ( re ) {
+            if ( typeF == "radiobutton" || typeF == "checkbox" ) {
+              if ( !this.checked ) {
+                _this.addWarnMesg( this, "campo requerido" );
+                return true;  
+              } else {
+                _this.delWarnMesg( this );  
+              }
+            } else if ( val === "" ) {  
+              _this.addWarnMesg( this, "campo requerido" );
+              return true;
+            } else {
+              _this.delWarnMesg( this );
+            }
+          }
+          if ( ch ) {
+            if ( _this.validate( val, type ) ) {
+              _this.delWarnMesg( this );
+            } else {
+              _this.badvalue++;            
+              _this.addWarnMesg( this, "valor incorrecto" );
+            }
+          }
+        };
+    for ( ;i<l; i++ ) {
+      el = document.getElementById( fields[i].getAttribute( "id" ) );
+      re = el.getAttribute( "data-required" );
+      ch = el.getAttribute( "data-tovalidate" );
+      typeF = el.getAttribute( "type" ) || el.type || "";
+      //console.log( el.getAttribute( "name" ) + " - " + re );
+      if ( re == "true" || ch !== "" ) {
+        _this._off( el, "blur", myfnblur );
+        _this._on( el, "blur", myfnblur );
+        if ( typeF == "checkbox" || typeF == "radiobutton" ) {
+          _this._on( el, "click", myfnblur );
+        }
+      }
+    }
+    i = 0;
+    l = selectF.length;
+  };
+  /*
+  Validate.prototype._off = function( el, ev, fn ){
+    if ( typeof el === "string" ) { el = document.getElementById( el ); }
+    if ( this._toType( el ) === "object" ) { 
+      if ( el.detachEvent ) {
+        el.detachEvent( 'on'+ev, el[ev+"fn"] );
+        el[ev+fn] = null;
+      } else{
+        el.removeEventListener( ev, fn, false );
+      }
+    }
+  };
+  Validate.prototype._on = function( el, ev, fn ){
+    if ( typeof el === "string" ) { el = document.getElementById( el ); }
+    if ( this._toType( el ) === "object" && this._toType( fn ) == "function" ) { 
+      if ( el.attachEvent ) {
+        el['e'+ev+"fn"] = fn;
+        el[ev+"fn"] = function(){
+          el['e'+ev+"fn"]( window.event );
+        };
+        el.attachEvent( 'on'+ev, el[ev+"fn"] );
+      } else {
+        el.addEventListener( ev, fn, false );
+      }
+    }
+  }; //*/
+  Validate.prototype._on = function( el, ev, fn ){
+    if( window.addEventListener ){ // modern browsers including IE9+
+        el.addEventListener( ev, fn, false );
+    } else if( window.attachEvent ) { // IE8 and below
+        el.attachEvent( 'on' + ev, fn );
+    } else {
+        el['on' + ev] = fn;
+    }
+  };
+  Validate.prototype._off = function( el, ev, fn ){
+    if( window.removeEventListener ){
+        el.removeEventListener(ev, fn, false);
+    } else if( window.detachEvent ) {
+        el.detachEvent( 'on' + ev, fn );
+    } else {
+        elem['on' + ev] = null; 
+    }
+  };
+  Validate.prototype._triggerEvent = function( el, ev ) {
+    var event;
+    if ( document.createEvent ) {
+      event = document.createEvent( "MouseEvents" );
+      event.initEvent( ev, true, true);
+    } else {
+      event = document.createEventObject();
+      event.eventType = ev;
+    }
+    event.eventName = ev;
+
+    if ( document.createEvent ) {
+      el.dispatchEvent( event );
+    } else {
+      el.fireEvent( "on" + event.eventType, event );
+    }
+  };
+  Validate.prototype._toType = function( obj ) {
+    if (typeof obj === "undefined") { return "undefined"; /* consider: typeof null === object */ }
+    if (obj === null) { return "null";}
+    var type = Object.prototype.toString.call(obj).match(/^\[object\s(.*)\]$/)[1] || '';
+    switch (type) {
+      case 'Number': if (isNaN(obj)) { return "nan"; } else { return "number"; } break;
+      case 'String': case 'Boolean': case 'Array': case 'Date': case 'RegExp': case 'Function': return type.toLowerCase();
+    }
+    if (typeof obj === "object") { return "object"; }
+    return undefined;
+  };
+  /*
+  Validate.prototype._getAttribute = function( ele, attr ) {
+    var result = ( ele.getAttribute && ele.getAttribute( attr ) ) || null;
+    if( result === null ) {
+      var attrs = ele.attributes,
+          length = attrs.length;
+      for( var i = 0; i < length; i++ ) {
+        if( attrs[i].nodeName === attr ) {
+          result = attrs[i].nodeValue;
+        }
+      }
+    }
+    return result;
+  };
+    _getElByAttrVal es similar a querySelectorAll con tag[atributo=valor], tag, [atributo] o [atributo=valor] para document.tag[attr=val] o para element.tag[attr=val]
+
+  Validate.prototype._getElByAttrVal = function( options ) {
+    var el = options.element || undefined,
+        tag = options.tag || undefined,
+        aAttr = options.aAttr || undefined,
+        aVal = options.aVal || undefined;
+    tag = ( typeof tag != "undefined" )?tag:"*";
+    aAttr = ( typeof aAttr != "undefined" )?aAttr:"";
+    aVal = ( typeof aVal != "undefined" )?aVal:"";
+    aAttr = ( this._toType( aAttr ) == "array" )?aAttr:[aAttr];
+    aVal = ( this._toType( aVal ) == "array" )?aVal:[aVal];
+    var allElOk = [], 
+        allElements = ( typeof el != "undefined" )?this._elementChildren( el ):document.getElementsByTagName( tag ),
+        i = 0, lI = allElements.length,
+        j, lJ = aAttr.length,
+        attrOK, attrTmpVal;
+    for ( ; i < lI; i++ ) {
+      attrOK = 0;
+      j = 0;
+      for ( ; j < lJ; j++ ) {
+        attrTmpVal = allElements[i]._getAttribute( aAttr[j] ) || allElements[i][aAttr[j]] || "";
+        if ( aVal[j] === "" ) {
+          if ( attrTmpVal !== "" ) { attrOK++; }
+        } else {
+          if ( attrTmpVal == aVal[j] ) { attrOK++; }
+        }
+      }
+      if ( attrOK === lJ ) { allElOk.push( allElements[i] ); }
+    }
+    return allElOk;
+  };
+//*/  
+  Validate.prototype._getArrayFromTag = function( domel, tagname ) {
+    return Array.prototype.slice.call( domel.getElementsByTagName( tagname ) );
+  };
+  Validate.prototype._getAllSiblings = function( elem, selector ) {
+    var sibs = [],
+        fn = function( elem ){ return ( typeof elem.tagName != "undefined" )?(elem.tagName.toUpperCase() == selector.toUpperCase()):false; },
+        parentnode = elem.parentNode;
+    elem = parentnode.firstChild;
+    do {
+      if ( !fn || fn( elem ) ) { sibs.push(elem); }
+    } while ( !!( elem = elem.nextSibling ) );
+    if ( sibs.length === 0 ) { sibs.push( parentnode ); }
+    return sibs;
+  };
+  Validate.prototype._elementChildren = function( element ) {
+    var childNodes = element.childNodes,
+        children = [],
+        i = childNodes.length;
+    while (i--) {
+        if (childNodes[i].nodeType == 1) {
+            children.unshift(childNodes[i]);
+        }
+    }
+    return children;
   };
 
   return Validate;
 
 })();
+
+(function () {
+  'use strict';
+  var _slice = Array.prototype.slice;
+  try {
+    _slice.call(document.documentElement);
+  } catch (e) { // Fails in IE < 9
+    Array.prototype.slice = function(begin, end) {
+      end = (typeof end !== 'undefined') ? end : this.length;
+      if (Object.prototype.toString.call(this) === '[object Array]'){ return _slice.call(this, begin, end); }
+      var i, cloned = [], size, len = this.length;
+      var start = begin || 0;
+      start = (start >= 0) ? start : Math.max(0, len + start);
+      var upTo = (typeof end == 'number') ? Math.min(end, len) : len;
+      if (end < 0) { upTo = len + end; }
+      size = upTo - start;
+      if (size > 0) {
+        cloned = new Array(size);
+        if (this.charAt) {
+          for (i = 0; i < size; i++) {
+            cloned[i] = this.charAt(start + i);
+          }
+        } else {
+          for (i = 0; i < size; i++) {
+            cloned[i] = this[start + i];
+          }
+        }
+      }
+      return cloned;
+    };
+  }
+}());
