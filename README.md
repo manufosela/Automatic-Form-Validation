@@ -11,43 +11,30 @@ Validate.js is an automatic javascript library to validate HTML form fields usin
 
 ```html
 <form id="myForm" data-validate="true">
-  <div id="field1">
-    <div class="form-group">
-      <fieldset class="large">
-        <label for="name">Your name</label>
-        <input id="name" name="name" type="text" placeholder="type your name" 
-               data-required="true" data-tovalidate="alfa" />
-      </fieldset>
-    </div>
-
-    <div class="form-group">
-      <fieldset class="large">
-        <label for="mobile">mobile number</label>
-        <input id="mobile" name="mobile" maxlength="9" type="text" placeholder="type your mobile number"
-               data-required="true" data-tovalidate="movil" />
-      </fieldset>
-    </div>
-
-    <div class="form-group">
-      <fieldset class="large">
-        <label for="email">tu email</label>
-        <input id="email" name="email" type="text" placeholder="type your email"
-               data-required="true" data-tovalidate="email" />
-      </fieldset>
-    </div>
-
-    <div class="form-group">
-      <fieldset class="large">
-        <input id="accept" name="accept" type="checkbox"
-               data-required="true" />
-        <span>Accept conditions</span>
-      </fieldset>
-    </div>
-
-    <div class="links">
-      <button id="submitBtn" type="submit" class="btn btn-default" data-checkform="true">Submit</button>
-    </div>
+  <div class="form-group">
+    <label for="name">Your name</label>
+    <input id="name" name="name" type="text" placeholder="type your name" data-required="true" data-tovalidate="alfa" />
   </div>
+
+  <div class="form-group">
+    <label for="mobile">mobile number</label>
+    <input id="mobile" name="mobile" maxlength="9" type="text" placeholder="type your mobile number" data-required="true" data-tovalidate="movil" />
+  </div>
+
+  <div class="form-group">
+    <label for="email">tu email</label>
+    <input id="email" name="email" type="text" placeholder="type your email" data-required="true" data-tovalidate="email" />
+  </div>
+
+  <div class="form-group">
+    <input id="accept" name="accept" type="checkbox" data-required="true" />
+    <span>Accept conditions</span>
+  </div>
+
+  <div class="links">
+    <button id="submitBtn" type="submit" class="btn btn-default" data-checkform="true">Submit</button>
+  </div>
+
 </form>
 ```
 
