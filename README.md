@@ -26,26 +26,26 @@ valiform.js automatically adds a red asterisk at the end on the tag <label>
 ##data-tovalidate types
 Valiform.js can validate the next fields type:
 
-* int or integer: integer numbers
-* float: float numbers, numbers and .
-* number or numero: numbers
-* alpha or alfa or text or texto: text values, not numbers.
-* text-: text values and -
-* alphaNumericSpace or textspace: alphanumeric values with spaces, text and numbers with spaces
-* alphaNumeric or textnum: alphanumeric values, text and numbers
-* email or correo: email address
-* iccid: integrated circuit card identifier
-* nummovil or movil or mobile: Telephone number (mobile phone, not international phone)
-* numfijo or fijo or landphone: Telephone number (land phone)
-* telefono or tel or telephone: Telephone number (mobile or land phone)
-* cp or postalcode: postal code
-* cuentabancaria or accountnumber: account number
-* tarjetacredito or creditcard: credit card
-* nif: Número de Identificacion Fiscal in Spain
-* cif: Código de Identificación Fiscal in Spain
-* nie: Número de Identidad de Extranjero in Spain
-* fecha or date: Date
-* noempty: any value
+* **int** or integer: integer numbers
+* **float**: float numbers, numbers and .
+* **number** or **numero**: numbers
+* **alpha** or **alfa** or **text** or **texto**: text values, not numbers.
+* **text-**: text values and -
+* **alphaNumericSpace** or **textspace**: alphanumeric values with spaces, text and numbers with spaces
+* **alphaNumeric** or **textnum**: alphanumeric values, text and numbers
+* **email** or **correo**: email address
+* **iccid**: integrated circuit card identifier
+* **nummovil** or **movil** or **mobile**: Telephone number (mobile phone, not international phone)
+* **numfijo** or **fijo** or **landphone**: Telephone number (land phone)
+* **telefono** or **tel** or **telephone**: Telephone number (mobile or land phone)
+* **cp** or **postalcode**: postal code
+* **cuentabancaria** or **accountnumber**: account number
+* **tarjetacredito** or **creditcard**: credit card
+* **nif**: Número de Identificacion Fiscal in Spain
+* **cif**: Código de Identificación Fiscal in Spain
+* **nie**: Número de Identidad de Extranjero in Spain
+* **fecha** or **date**: Date
+* **noempty**: any value
 
 ##Code Example:
 
