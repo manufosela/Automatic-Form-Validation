@@ -2,14 +2,26 @@
 /* works IE8+, FF, Chrome */
 /* MIT License (MIT) Copyright (c) 2015 @manufosela */
 /* It is independent of any library or framework */
-var Validate = (function(){
+/* Valiform.js by @manufosela - 2015 */
+var Valiform = (function(){
 
   'use strict';
   
-  Validate = function() {
-    this.badValue = 0;
-    this.warningColor = "#F60";
+  Valiform = function( confOpt ) {
+    /**** CONFIGURE OPTIONS **********/
+    confOpt = confOpt || { warningColor:"#F60", asteriskStyle:"color: #F00; font-size: 15px;" };
+    
+    this.warningColor = confOpt.warningColor;
+    this.asteriskStyle = confOpt.asteriskStyle;
 
+    this.text = {
+      requiredField: "campo requerido",
+      wrongValue: "valor incorrecto"
+    };
+
+    /********************************/
+
+    this.badValue = 0;
     var _this = this,
         dVld = document.querySelectorAll( "form[data-validate=true]" ),
         dChk, i = 0, lI = dVld.length, j = 0, lJ, okE, okV,
@@ -35,7 +47,7 @@ var Validate = (function(){
       }
     }
   };
-  Validate.prototype.validate = function( val, type ) {
+  Valiform.prototype.validate = function( val, type ) {
     if ( val === "" && val === null && type != "noempty" ) { return true; }
     switch( type ) {
       case "int":
@@ -60,53 +72,59 @@ var Validate = (function(){
       case "textnum":
         return this.isAlphaNumeric( val );
       case "email":
+      case "correo":
         return this.isEmail( val );
       case "iccid":
         return this.checkICCID( val );
       case "nummovil":
       case "movil":
+      case "mobile":
         return this.checkNumMovil( val );
       case "numfijo":
       case "fijo":
+      case "landphone":
         return this.checkNumFijo( val );
       case "telefono":
       case "tel": // fijo o movil
+      case "telephone":
         return this.checkTelephoneNumber( val );
       case "cp":
+      case "postalcode":
         return this.checkCodPostal( val );
       case "cuentabancaria":
+      case "accountnumber":
         return this.verificaCuentaBancaria( val );
       case "tarjetacredito":
+      case "creditcard":
         return this.verificaNumTarjetaCredito( val );
       case "nif":
       case "cif":
       case "nie":
         return valida_nif_cif_nie( val );
       case "fecha":
+      case "date":
         return isDate( val, "dmy" );
       case "selected":
       case "noempty":
         return ( val!=="" );
-      case "checked":
-        return ( $( this ).prop( "checked" ) == "true" );
     }
     return false;
   };
 
-  Validate.prototype.isInt = function( val ){
+  Valiform.prototype.isInt = function( val ){
     return ( val == parseInt( val ) );
   };
-  Validate.prototype.isFloat = function( val ){
+  Valiform.prototype.isFloat = function( val ){
     return ( val == parseFloat( val ) );
   };
-  Validate.prototype.isNumber = function( val ){
+  Valiform.prototype.isNumber = function( val ){
     var regexp = /^[0-9\.]+$/;
     return regexp.test( val );
   };
-  Validate.prototype.isEmail = function( email ) {
+  Valiform.prototype.isEmail = function( email ) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test( email );
   };
-  Validate.prototype.verificaCuentaBancaria = function( numcuenta ) {
+  Valiform.prototype.verificaCuentaBancaria = function( numcuenta ) {
     var parte1 = "00" + numcuenta.substr( 0, 8),
         control = numcuenta.substr( 8, 2 ),
         parte2 = numcuenta.substr( 10 ),
@@ -125,7 +143,7 @@ var Validate = (function(){
     return ( ( d1.toString() + d2.toString() ) == control );
   };
 
-  Validate.prototype.verificaNumTarjetaCredito = function( numtarjeta ) {
+  Valiform.prototype.verificaNumTarjetaCredito = function( numtarjeta ) {
     var result = false, 
         firstDigitCorrect = ( numtarjeta[0] == 3 || numtarjeta[0] == 4 || numtarjeta[0] == 5 || numtarjeta[0] == 6 );
     if ( numtarjeta.length == 16 && firstDigitCorrect ) {
@@ -134,7 +152,7 @@ var Validate = (function(){
     return result;
   };
 
-  Validate.prototype._getCtrlNumberCreditCard = function( numtarjeta ) {
+  Valiform.prototype._getCtrlNumberCreditCard = function( numtarjeta ) {
     var suma=0, x, y;
     for( x=1; x<16; x++ ){
       if ( x/2 !== parseInt( x/2) ) {
@@ -153,27 +171,27 @@ var Validate = (function(){
     }
     return suma;
   };
-  Validate.prototype.isAlpha = function( val ) {
+  Valiform.prototype.isAlpha = function( val ) {
     var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
     var a = regexp.test( val );
     return a;
   };
-  Validate.prototype.isAlphaGuion = function( val ) {
+  Valiform.prototype.isAlphaGuion = function( val ) {
     var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\'\-]+$/;
     var a = regexp.test( val );
     return a;
   };
-  Validate.prototype.isAlphaNumeric = function( val ){
+  Valiform.prototype.isAlphaNumeric = function( val ){
     var regexp = /^[0-9A-Za-záéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
     var a = regexp.test( val );
     return a;  
   };
-  Validate.prototype.isAlphaNumericSpace = function ( val ) {
+  Valiform.prototype.isAlphaNumericSpace = function ( val ) {
     var regexp = /^[0-9A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
     var a = regexp.test( val );
     return a;
   };
-  Validate.prototype.isDate = function( txtDate, mode ) {
+  Valiform.prototype.isDate = function( txtDate, mode ) {
     var currVal = txtDate;
     if(currVal === '') { return false; }
     //Declare Regex 
@@ -207,23 +225,23 @@ var Validate = (function(){
     }
     return true;
   };
-  Validate.prototype.checkNumMovil = function ( val ) {
+  Valiform.prototype.checkNumMovil = function ( val ) {
     var patron = /^[67]\d{8}$/;
     var expReg = new RegExp( patron );
     return ( expReg.test( val ) )?1:0;
   };
-  Validate.prototype.checkNumFijo = function ( val ) {
+  Valiform.prototype.checkNumFijo = function ( val ) {
     var patron = /^[89]\d{8}$/;
     var expReg = new RegExp( patron );
     return ( expReg.test( val ) )?1:0;
   };
-  Validate.prototype.checkTelephoneNumber = function ( val ) {
+  Valiform.prototype.checkTelephoneNumber = function ( val ) {
     return ( !this.checkNumFijo( val ) && !this.checkNumMovil( val ) )?-2:1;
   };
-  Validate.prototype.checkCodPostal = function ( val ) {
+  Valiform.prototype.checkCodPostal = function ( val ) {
     return ( val.length == 5 && this.isInt( val ) );
   };
-  Validate.prototype.checkICCID = function ( Luhn ) {
+  Valiform.prototype.checkICCID = function ( Luhn ) {
     var LuhnDigit = parseInt( Luhn.substring( Luhn.length-1, Luhn.length ) ),
         LuhnLess = Luhn.substring( 0, Luhn.length-1 );
     if ( Luhn.substring(0,2) != "89" ) { return 0; }
@@ -236,7 +254,7 @@ var Validate = (function(){
     }
     return 0;
   };
-  Validate.prototype._CalculateLuhn = function ( Luhn ) {
+  Valiform.prototype._CalculateLuhn = function ( Luhn ) {
     var sum = 0;
     for ( i=0; i<Luhn.length; i++ ) {
       sum += parseInt( Luhn.substring( i, i+1 ) );
@@ -255,7 +273,7 @@ var Validate = (function(){
     return mod10;
    };
 
-  Validate.prototype.calcDigitoControl2LineaNIF = function( s ) {
+  Valiform.prototype.calcDigitoControl2LineaNIF = function( s ) {
     var m = [ 7, 3, 1],
         i = 0, n = 0,
         l = s.length;
@@ -265,17 +283,17 @@ var Validate = (function(){
     return n % 10;
   };
 
-  Validate.prototype._getLetraNIF = function( dni ) {
+  Valiform.prototype._getLetraNIF = function( dni ) {
     var cadenadni = "TRWAGMYFPDXBNJZSQVHLCKE", 
         posicion = dni % 23,
         letra = cadenadni.charAt( posicion );
     return letra;
   };
 
-  Validate.prototype.valida_nif_cif_nie = function( a ) {
+  Valiform.prototype.valida_nif_cif_nie = function( a ) {
     var temp = a.toUpperCase(), temp1, temp2, i, n, pos,
         cadenadni = "TRWAGMYFPDXBNJZSQVHLCKE", posicion, letra, letradni, suma;
-    if ( $( "#documento_de_identidad" ).val() == "PASAPORTE" ) { return 1; }
+    if ( document.getElementById( "documento_de_identidad" ).getAttribute( "value" ) == "PASAPORTE" ) { return 1; }
     if( temp !== '' ) {
       // ANTES DE - _ \s  !/^[A-Z]{1}[\s-_]?[0-9]{7}[\s-_]?[A-Z0-9]{1}$/
       if( ( !/^[A-Z]{1}[0-9]{7}[A-Z0-9]{1}$/.test( temp ) && !/^[T]{1}[A-Z0-9]{8}$/.test( temp ) ) && !/^[0-9]{8}[A-Z]{1}$/.test( temp ) ) {
@@ -334,36 +352,11 @@ var Validate = (function(){
     return 0;
   };
 
-/**** FORM METHODS  *********/
-  Validate.prototype.cleanMsgError = function( htmlId ) {
-    if ( !!~htmlId.indexOf( "fn_" ) ) { htmlId = 'fec_nac'; }
-    $( "#"+htmlId+"_msgError_Layer" ).html ( "" );
-    $( "#"+htmlId ).css( { "border-color": "#333" } );
-  };
-
-  Validate.prototype.appendHtml = function( el, htmlId, msgError, border ) {
-    if ( typeof msgError != "undefined" ) {
-      if ( typeof border == "undefined" ) { border = true; }
-      if ( $( "#"+htmlId+"_msgError_Layer" ).length === 0 ) {
-        var htmlMsgError = "<span class='error' id='"+htmlId+"_msgError_Layer'>&nbsp;&nbsp;" + msgError + "</span>";
-        el.append( htmlMsgError );
-      } else {
-        $( "#"+htmlId+"_msgError_Layer" ).html( msgError );
-      }
-      if ( border ) { $( "#"+htmlId ).css( { "border": "1px solid #F00" } ); }
-    }
-  };
-
-  Validate.prototype.restoreErrorLayer = function( htmlId ) {
-    if ( $( "#"+htmlId+"_msgError_Layer" ).length !== 0 ) {
-      $( "#"+htmlId+"_msgError_Layer" ).remove();
-      $( "#"+htmlId ).css( { "border": "1px solid #CCC" } );
-    }
-  };
+  /*************************************************/
 
   // Put a span with a * in form fields with attribute data-required=true
   // Is mandatory to have a label tag to append span tag into the label tag
-  Validate.prototype.markRequiredFields = function( f, html ) {
+  Valiform.prototype.markRequiredFields = function( f, html ) {
     if ( typeof f === "undefined" ) { return false; }
     html = ( typeof html !== "undefined" )? html:"*";
     var _this = this,
@@ -372,13 +365,13 @@ var Validate = (function(){
         asterisco, sb;
     for( ; i<l; i++ ) {
       asterisco = document.createElement( "span" );
-      asterisco.className="asterisco";
+      asterisco.setAttribute( "style", this.asteriskStyle );
       asterisco.innerHTML=html;
       sb = _this._getAllSiblings( aEl[i], "LABEL" );
       sb[0].appendChild( asterisco );
     }
   };
-  Validate.prototype.validateFields = function(){
+  Valiform.prototype.validateFields = function(){
     this.badValue=0;
     var _this=this,
         aEl = document.querySelectorAll( "[data-tovalidate]" ),
@@ -391,7 +384,7 @@ var Validate = (function(){
     }
     return ( this.badValue===0 );
   };
-  Validate.prototype.noEmptyFields = function(){
+  Valiform.prototype.noEmptyFields = function(){
     var _this = this,
         empty=0,
         aEl = document.querySelectorAll( "[data-required=true]" ),
@@ -402,17 +395,17 @@ var Validate = (function(){
       typeF = aEl[i].getAttribute( "type" ) || aEl[i].type || "";
       if ( typeF == "radiobutton" || typeF == "checkbox" ) {
         if ( !aEl[i].checked ) {
-          _this.addWarnMesg( aEl[i], "campo requerido" );
+          _this.addWarnMesg( aEl[i], _this.text.requiredField );
           empty++;
         }
       } else if ( val === "" ) { 
-        _this.addWarnMesg( aEl[i], "campo requerido" );
+        _this.addWarnMesg( aEl[i], _this.text.requiredField );
         empty++; 
       }
     }
     return ( empty===0 );
   };
-  Validate.prototype.addWarnMesg = function( el, msg ) {
+  Valiform.prototype.addWarnMesg = function( el, msg ) {
     var warning = document.createElement( "p" ),
         target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
         name= target.getAttribute( "name" ),
@@ -426,7 +419,7 @@ var Validate = (function(){
         el.setAttribute( "style", "border:2px solid "+this.warningColor+"!important;" );
       }
   };
-  Validate.prototype.delWarnMesg = function( el ) {
+  Valiform.prototype.delWarnMesg = function( el ) {
     var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
         name= target.getAttribute( "name" ) || "";
     if ( document.getElementById( "warning-"+name ) ) {
@@ -435,30 +428,30 @@ var Validate = (function(){
     //this.removeClass( el, "warningField" );
     this.removeStyle( el );
   };
-  Validate.prototype.hasClass = function( el, cls ) {
+  Valiform.prototype.hasClass = function( el, cls ) {
     var regexp = new RegExp( '(\\s|^)' + cls + '(\\s|$)' ),
         target = ( typeof el.className == "undefined" )?window.event.srcElement:el;
     return target.className.match( regexp );
   };
-  Validate.prototype.addClass = function( el, cls ){
+  Valiform.prototype.addClass = function( el, cls ){
     if( !this.hasClass( el, cls ) ) {
       var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
           spc = ( target.className !== "" )?" ":"";
       target.className+=spc+cls;
     }
   };
-  Validate.prototype.removeClass = function( el, cls ) {
+  Valiform.prototype.removeClass = function( el, cls ) {
     if( this.hasClass( el, cls ) ) {
       var regexp = new RegExp( '(\\s|^)' + cls + '(\\s|$)' ),
           target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement;
       target.className=target.className.replace( regexp,"");
     }
   };
-  Validate.prototype.removeStyle = function( el ) {
+  Valiform.prototype.removeStyle = function( el ) {
     var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement;
-    target.setAttribute( "style", "" );
+    target.removeAttribute( "style" );
   };
-  Validate.prototype.checkFieldsRealTime = function( f ) {
+  Valiform.prototype.checkFieldsRealTime = function( f ) {
     var _this = this,
         inputF = this._getArrayFromTag( f, "input" ),
         textareaF = this._getArrayFromTag( f, "textarea" ),
@@ -478,13 +471,13 @@ var Validate = (function(){
           if ( re ) {
             if ( typeF == "radiobutton" || typeF == "checkbox" ) {
               if ( !this.checked ) {
-                _this.addWarnMesg( this, "campo requerido" );
+                _this.addWarnMesg( this, _this.text.requiredField );
                 return true;  
               } else {
                 _this.delWarnMesg( this );  
               }
             } else if ( val === "" ) {  
-              _this.addWarnMesg( this, "campo requerido" );
+              _this.addWarnMesg( this, _this.text.requiredField );
               return true;
             } else {
               _this.delWarnMesg( this );
@@ -495,7 +488,7 @@ var Validate = (function(){
               _this.delWarnMesg( this );
             } else {
               _this.badValue++;            
-              _this.addWarnMesg( this, "valor incorrecto" );
+              _this.addWarnMesg( this, _this.text.wrongValue );
             }
           }
         };
@@ -515,7 +508,7 @@ var Validate = (function(){
     i = 0;
     l = selectF.length;
   };
-  Validate.prototype._on = function( el, ev, fn ){
+  Valiform.prototype._on = function( el, ev, fn ){
     if( window.addEventListener ){ // modern browsers including IE9+
         el.addEventListener( ev, fn, false );
     } else if( window.attachEvent ) { // IE8 and below
@@ -524,7 +517,7 @@ var Validate = (function(){
         el['on' + ev] = fn;
     }
   };
-  Validate.prototype._off = function( el, ev, fn ){
+  Valiform.prototype._off = function( el, ev, fn ){
     if( window.removeEventListener ){
         el.removeEventListener(ev, fn, false);
     } else if( window.detachEvent ) {
@@ -533,7 +526,7 @@ var Validate = (function(){
         elem['on' + ev] = null; 
     }
   };
-  Validate.prototype._triggerEvent = function( el, ev ) {
+  Valiform.prototype._triggerEvent = function( el, ev ) {
     var event;
     if ( document.createEvent ) {
       event = document.createEvent( "MouseEvents" );
@@ -550,7 +543,7 @@ var Validate = (function(){
       el.fireEvent( "on" + event.eventType, event );
     }
   };
-  Validate.prototype._toType = function( obj ) {
+  Valiform.prototype._toType = function( obj ) {
     if (typeof obj === "undefined") { return "undefined"; /* consider: typeof null === object */ }
     if (obj === null) { return "null";}
     var type = Object.prototype.toString.call(obj).match(/^\[object\s(.*)\]$/)[1] || '';
@@ -561,10 +554,10 @@ var Validate = (function(){
     if (typeof obj === "object") { return "object"; }
     return undefined;
   };
-  Validate.prototype._getArrayFromTag = function( domel, tagname ) {
+  Valiform.prototype._getArrayFromTag = function( domel, tagname ) {
     return Array.prototype.slice.call( domel.getElementsByTagName( tagname ) );
   };
-  Validate.prototype._getAllSiblings = function( elem, selector ) {
+  Valiform.prototype._getAllSiblings = function( elem, selector ) {
     var sibs = [],
         fn = function( elem ){ return ( typeof elem.tagName != "undefined" )?(elem.tagName.toUpperCase() == selector.toUpperCase()):false; },
         parentnode = elem.parentNode;
@@ -575,7 +568,7 @@ var Validate = (function(){
     if ( sibs.length === 0 ) { sibs.push( parentnode ); }
     return sibs;
   };
-  Validate.prototype._elementChildren = function( element ) {
+  Valiform.prototype._elementChildren = function( element ) {
     var childNodes = element.childNodes,
         children = [],
         i = childNodes.length;
@@ -587,7 +580,7 @@ var Validate = (function(){
     return children;
   };
 
-  return Validate;
+  return Valiform;
 
 })();
 
