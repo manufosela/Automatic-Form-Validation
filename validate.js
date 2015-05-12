@@ -7,7 +7,7 @@ var Validate = (function(){
   'use strict';
   
   Validate = function() {
-    this.badvalue = 0;
+    this.badValue = 0;
     this.warningColor = "#F60";
 
     var _this = this,
@@ -379,7 +379,7 @@ var Validate = (function(){
     }
   };
   Validate.prototype.validateFields = function(){
-    this.badvalue=0;
+    this.badValue=0;
     var _this=this,
         aEl = document.querySelectorAll( "[data-tovalidate]" ),
         val, type,
@@ -389,7 +389,7 @@ var Validate = (function(){
       type = aEl[i].getAttribute( "data-tovalidate" ) || "";
       if ( !_this.validate( val, type ) ) { this.badValue++; }
     }
-    return ( this.badvalue===0 );
+    return ( this.badValue===0 );
   };
   Validate.prototype.noEmptyFields = function(){
     var _this = this,
@@ -493,7 +493,7 @@ var Validate = (function(){
             if ( _this.validate( val, type ) ) {
               _this.delWarnMesg( this );
             } else {
-              _this.badvalue++;            
+              _this.badValue++;            
               _this.addWarnMesg( this, "valor incorrecto" );
             }
           }
