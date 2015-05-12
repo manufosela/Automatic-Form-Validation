@@ -6,11 +6,13 @@ Validate.js is an automatic javascript library to validate HTML form fields usin
 [http://codepen.io/manufosela/pen/PqZdrq]
 
 ##Use 
-Add in yout HTML
+Frist add in yout HTML
 ```javascript
 <script type="text/javascript" src="valiform.min.js"></script>
 ```
-Add *data-* attributes to form fields:
+Second add data-validate="true" to form tag
+
+And thrid add *data-* attributes to form fields:
 ```html
 data-required="true" to mandatory fields
 data-tovalidate="XXXX" to check the value with XXXX type
@@ -18,7 +20,9 @@ data-tovalidate="XXXX" to check the value with XXXX type
 For example:
 
 ```html
-  <input type="text" placeholder="type something.." data-required="true" data-tovalidate="alpha" />
+  <form id="myForm" data-validate="true">
+    <input type="text" placeholder="type something.." data-required="true" data-tovalidate="alpha" />
+     [...]
 ```
 valiform.js automatically adds a red asterisk at the end on the tag <label>
 
