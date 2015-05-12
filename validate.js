@@ -12,22 +12,22 @@ var Validate = (function(){
 
     var _this = this,
         dVld = document.querySelectorAll( "form[data-validate=true]" ),
-        dChk, i = 0, lI = dVld.length, j = 0, lJ, ok,
+        dChk, i = 0, lI = dVld.length, j = 0, lJ, okE, okV,
         _beforeSubmit = function( e ) {
           if( e.preventDefault ) { e.preventDefault(); e.stopPropagation(); } else { e.returnValue = false; }
           e = e || window.event;
           var target = e.target || e.srcElement,
               f = target.formParam;
-          if ( _this.noEmptyFields() ) { ok = true; }
-          if ( _this.validateFields() ){ ok = ok && true; }
-          if ( ok ) { _this._triggerEvent( f, "submit" ); }
+          if ( _this.noEmptyFields() ) { okE = true; }
+          if ( _this.validateFields() ){ okV = true; }
+          if ( okE && okV ) { _this._triggerEvent( f, "submit" ); }
           return false;
         };
     for( ; i<lI; i++ ) {    
       this.markRequiredFields( dVld[i] );
       this.checkFieldsRealTime( dVld[i] );
       dChk = dVld[i].querySelectorAll( "[type=submit][data-checkform=true]" );
-      lJ = dChk.length; ok = false;
+      lJ = dChk.length; okE = false; okV = false;
       for ( ; j<lJ; j++ ) {
         var submitBtn = dChk[j];
         submitBtn.formParam = dVld[i];
@@ -403,6 +403,7 @@ var Validate = (function(){
       if ( typeF == "radiobutton" || typeF == "checkbox" ) {
         if ( !aEl[i].checked ) {
           _this.addWarnMesg( aEl[i], "campo requerido" );
+          empty++;
         }
       } else if ( val === "" ) { 
         _this.addWarnMesg( aEl[i], "campo requerido" );
