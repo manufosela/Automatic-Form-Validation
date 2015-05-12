@@ -5,6 +5,48 @@ Validate.js is an automatic javascript library to validate HTML form fields usin
 ##Live Codepen Example:
 [http://codepen.io/manufosela/pen/PqZdrq]
 
+##Use 
+Add in yout HTML
+```javascript
+<script type="text/javascript" src="valiform.min.js"></script>
+```
+Add *data-* attributes to form fields:
+```html
+data-required="true" to mandatory fields
+data-tovalidate="XXXX" to check the value with XXXX type
+```
+For example:
+
+```html
+  <input type="text" placeholder="type something.." data-required="true" data-tovalidate="alpha" />
+```
+valiform.js automatically adds a red asterisk at the end on the tag <label>
+
+
+##data-tovalidate types
+Valiform.js can validate the next fields type:
+
+* int or integer: integer numbers
+* float: float numbers, numbers and .
+* number or numero: numbers
+* alpha or alfa or text or texto: text values, not numbers.
+* text-: text values and -
+* alphaNumericSpace or textspace: alphanumeric values with spaces, text and numbers with spaces
+* alphaNumeric or textnum: alphanumeric values, text and numbers
+* email or correo: email address
+* iccid: integrated circuit card identifier
+* nummovil or movil or mobile: Telephone number (mobile phone, not international phone)
+* numfijo or fijo or landphone: Telephone number (land phone)
+* telefono or tel or telephone: Telephone number (mobile or land phone)
+* cp or postalcode: postal code
+* cuentabancaria or accountnumber: account number
+* tarjetacredito or creditcard: credit card
+* nif: Número de Identificacion Fiscal in Spain
+* cif: Código de Identificación Fiscal in Spain
+* nie: Número de Identidad de Extranjero in Spain
+* fecha or date: Date
+* noempty: any value
+
 ##Code Example:
 
 ###HTML:
