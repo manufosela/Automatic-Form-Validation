@@ -8,9 +8,9 @@ var Validate = (function(){
   
   Validate = function() {
     this.badvalue = 0;
+    this.warningColor = "#F60";
 
     var _this = this,
-        //dVld = this._getElByAttrVal( { tag:"form", aAttr:"data-validate", aVal:"true" } ),
         dVld = document.querySelectorAll( "form[data-validate=true]" ),
         dChk, i = 0, lI = dVld.length, j = 0, lJ, ok,
         _beforeSubmit = function( e ) {
@@ -24,10 +24,8 @@ var Validate = (function(){
           return false;
         };
     for( ; i<lI; i++ ) {    
-      //console.log( "add markRequiredFields and checkFieldsRealTime in " + dVld[i].id );
       this.markRequiredFields( dVld[i] );
       this.checkFieldsRealTime( dVld[i] );
-      //dChk = this._getElByAttrVal( { element:dVld[i], aAttr:["type","data-checkform"], aVal:["submit","true"] } );
       dChk = dVld[i].querySelectorAll( "[type=submit][data-checkform=true]" );
       lJ = dChk.length; ok = false;
       for ( ; j<lJ; j++ ) {
@@ -369,7 +367,6 @@ var Validate = (function(){
     if ( typeof f === "undefined" ) { return false; }
     html = ( typeof html !== "undefined" )? html:"*";
     var _this = this,
-        //aEl = this._getElByAttrVal( { element:f, aAttr:"data-required", aVal:"true" } ),
         aEl = f.querySelectorAll("[data-required=true]" ),
         i = 0, l = aEl.length,
         asterisco, sb;
@@ -384,7 +381,6 @@ var Validate = (function(){
   Validate.prototype.validateFields = function(){
     this.badvalue=0;
     var _this=this,
-        //aEl = this._getElByAttrVal( { aAttr:"data-tovalidate" } ),
         aEl = document.querySelectorAll( "[data-tovalidate]" ),
         val, type,
         i = 0, l = aEl.length;
@@ -398,7 +394,6 @@ var Validate = (function(){
   Validate.prototype.noEmptyFields = function(){
     var _this = this,
         empty=0,
-        //aEl = this._getElByAttrVal( { aAttr:"data-required", aVal:"true" } ),
         aEl = document.querySelectorAll( "[data-required=true]" ),
         val, typeF,
         i = 0, l = aEl.length;
@@ -417,17 +412,17 @@ var Validate = (function(){
     return ( empty===0 );
   };
   Validate.prototype.addWarnMesg = function( el, msg ) {
-    var warning = document.createElement( "div" ),
+    var warning = document.createElement( "p" ),
         target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
         name= target.getAttribute( "name" ),
         id = "warning-"+name;
       if ( !document.getElementById( id ) ) {
         el = document.getElementById( target.getAttribute( "id" ) || el.id );
-        warning.className="warning";
+        warning.className="text-warning";
         warning.id=id;
         warning.innerHTML=msg;        
         el.parentElement.appendChild( warning );
-        el.setAttribute( "class", "warningField" );
+        el.setAttribute( "style", "border:2px solid "+this.warningColor+"!important;" );
       }
   };
   Validate.prototype.delWarnMesg = function( el ) {
@@ -436,7 +431,8 @@ var Validate = (function(){
     if ( document.getElementById( "warning-"+name ) ) {
       target.parentElement.removeChild( document.getElementById( "warning-"+name ) );
     }
-    this.removeClass( el, "warningField" );
+    //this.removeClass( el, "warningField" );
+    this.removeStyle( el );
   };
   Validate.prototype.hasClass = function( el, cls ) {
     var regexp = new RegExp( '(\\s|^)' + cls + '(\\s|$)' ),
@@ -456,6 +452,10 @@ var Validate = (function(){
           target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement;
       target.className=target.className.replace( regexp,"");
     }
+  };
+  Validate.prototype.removeStyle = function( el ) {
+    var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement;
+    target.setAttribute( "style", "" );
   };
   Validate.prototype.checkFieldsRealTime = function( f ) {
     var _this = this,
@@ -503,7 +503,6 @@ var Validate = (function(){
       re = el.getAttribute( "data-required" );
       ch = el.getAttribute( "data-tovalidate" );
       typeF = el.getAttribute( "type" ) || el.type || "";
-      //console.log( el.getAttribute( "name" ) + " - " + re );
       if ( re == "true" || ch !== "" ) {
         _this._off( el, "blur", myfnblur );
         _this._on( el, "blur", myfnblur );
@@ -515,32 +514,6 @@ var Validate = (function(){
     i = 0;
     l = selectF.length;
   };
-  /*
-  Validate.prototype._off = function( el, ev, fn ){
-    if ( typeof el === "string" ) { el = document.getElementById( el ); }
-    if ( this._toType( el ) === "object" ) { 
-      if ( el.detachEvent ) {
-        el.detachEvent( 'on'+ev, el[ev+"fn"] );
-        el[ev+fn] = null;
-      } else{
-        el.removeEventListener( ev, fn, false );
-      }
-    }
-  };
-  Validate.prototype._on = function( el, ev, fn ){
-    if ( typeof el === "string" ) { el = document.getElementById( el ); }
-    if ( this._toType( el ) === "object" && this._toType( fn ) == "function" ) { 
-      if ( el.attachEvent ) {
-        el['e'+ev+"fn"] = fn;
-        el[ev+"fn"] = function(){
-          el['e'+ev+"fn"]( window.event );
-        };
-        el.attachEvent( 'on'+ev, el[ev+"fn"] );
-      } else {
-        el.addEventListener( ev, fn, false );
-      }
-    }
-  }; //*/
   Validate.prototype._on = function( el, ev, fn ){
     if( window.addEventListener ){ // modern browsers including IE9+
         el.addEventListener( ev, fn, false );
@@ -587,53 +560,6 @@ var Validate = (function(){
     if (typeof obj === "object") { return "object"; }
     return undefined;
   };
-  /*
-  Validate.prototype._getAttribute = function( ele, attr ) {
-    var result = ( ele.getAttribute && ele.getAttribute( attr ) ) || null;
-    if( result === null ) {
-      var attrs = ele.attributes,
-          length = attrs.length;
-      for( var i = 0; i < length; i++ ) {
-        if( attrs[i].nodeName === attr ) {
-          result = attrs[i].nodeValue;
-        }
-      }
-    }
-    return result;
-  };
-    _getElByAttrVal es similar a querySelectorAll con tag[atributo=valor], tag, [atributo] o [atributo=valor] para document.tag[attr=val] o para element.tag[attr=val]
-
-  Validate.prototype._getElByAttrVal = function( options ) {
-    var el = options.element || undefined,
-        tag = options.tag || undefined,
-        aAttr = options.aAttr || undefined,
-        aVal = options.aVal || undefined;
-    tag = ( typeof tag != "undefined" )?tag:"*";
-    aAttr = ( typeof aAttr != "undefined" )?aAttr:"";
-    aVal = ( typeof aVal != "undefined" )?aVal:"";
-    aAttr = ( this._toType( aAttr ) == "array" )?aAttr:[aAttr];
-    aVal = ( this._toType( aVal ) == "array" )?aVal:[aVal];
-    var allElOk = [], 
-        allElements = ( typeof el != "undefined" )?this._elementChildren( el ):document.getElementsByTagName( tag ),
-        i = 0, lI = allElements.length,
-        j, lJ = aAttr.length,
-        attrOK, attrTmpVal;
-    for ( ; i < lI; i++ ) {
-      attrOK = 0;
-      j = 0;
-      for ( ; j < lJ; j++ ) {
-        attrTmpVal = allElements[i]._getAttribute( aAttr[j] ) || allElements[i][aAttr[j]] || "";
-        if ( aVal[j] === "" ) {
-          if ( attrTmpVal !== "" ) { attrOK++; }
-        } else {
-          if ( attrTmpVal == aVal[j] ) { attrOK++; }
-        }
-      }
-      if ( attrOK === lJ ) { allElOk.push( allElements[i] ); }
-    }
-    return allElOk;
-  };
-//*/  
   Validate.prototype._getArrayFromTag = function( domel, tagname ) {
     return Array.prototype.slice.call( domel.getElementsByTagName( tagname ) );
   };
