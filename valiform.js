@@ -1,4 +1,4 @@
-/* validate.js library by @manufosela - 2015 */
+/* valiform.js library by @manufosela - 2015 */
 /* works IE8+, FF, Chrome */
 /* MIT License (MIT) Copyright (c) 2015 @manufosela */
 /* It is independent of any library or framework */
