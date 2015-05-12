@@ -1,6 +1,6 @@
 # Valiform.js
 
-Validate.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
+Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
 
 ##Live Codepen Example:
 [http://codepen.io/manufosela/pen/PqZdrq]
