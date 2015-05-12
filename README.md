@@ -12,7 +12,7 @@ Frist add in yout HTML
 ```
 Second add data-validate="true" to form tag
 
-And thrid add *data-* attributes to form fields:
+And third add *data-* attributes to form fields:
 ```html
 data-required="true" to mandatory fields
 data-tovalidate="XXXX" to check the value with XXXX type
