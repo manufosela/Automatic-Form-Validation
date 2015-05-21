@@ -403,7 +403,9 @@ var Valiform = (function(){
       if ( aEl[i].getAttribute( "type" ) != "hidden" ) {
         val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
         typeF = aEl[i].getAttribute( "type" ) || aEl[i].type || "";
-        if ( typeF == "radio" || typeF == "checkbox" ) {
+        if ( typeF == "radio" ) {
+          empty += _this.checkRadioField( aEl[i] );
+        } else if ( typeF == "checkbox" ) {
           if ( !aEl[i].checked ) {
             _this.addWarnMesg( aEl[i], _this.text.requiredField );
             empty++;
@@ -419,6 +421,24 @@ var Valiform = (function(){
       }
     }
     return ( empty===0 );
+  };
+  Valiform.prototype.checkRadioField = function( el ) {
+    var empty = 0,
+        atLeastOne = 0,
+        nameF = "[name=" + el.getAttribute( "name" ) +"]",
+        formE = this._getParentElement( el, "form" ),
+        radF = formE.querySelectorAll( nameF ),
+        j = 0, l2 = radF.length;
+    for ( ;j<l2; j++ ){
+      if ( radF[j].checked ) { atLeastOne++; break; }
+    }
+    if ( atLeastOne === 0 ) {
+      this.addWarnMesg( el, this.text.requiredField );
+      empty++;
+    } else {
+      this.delWarnMesg( el );
+    }
+    return empty;
   };
   Valiform.prototype.addWarnMesg = function( el, msg ) {
     var warning = document.createElement( "p" ),
@@ -484,26 +504,28 @@ var Valiform = (function(){
               ch = ( type !== "" ),
               typeF = target.type || target.getAttribute( "type" ) || "";
           if ( re ) {
-            if ( typeF == "radiobutton" || typeF == "checkbox" ) {
-              if ( !this.checked ) {
-                _this.addWarnMesg( this, _this.text.requiredField );
+            if ( typeF == "radio" ) {
+              _this.checkRadioField( target );
+            } else if ( typeF == "checkbox" ) {
+              if ( !target.checked ) {
+                _this.addWarnMesg( target, _this.text.requiredField );
                 return true;  
               } else {
-                _this.delWarnMesg( this );  
+                _this.delWarnMesg( target );  
               }
             } else if ( val === "" ) {  
-              _this.addWarnMesg( this, _this.text.requiredField );
+              _this.addWarnMesg( target, _this.text.requiredField );
               return true;
             } else {
-              _this.delWarnMesg( this );
+              _this.delWarnMesg( target );
             }
           }
           if ( ch ) {
             if ( _this.validate( val, type ) ) {
-              _this.delWarnMesg( this );
+              _this.delWarnMesg( target );
             } else {
               _this.badValue++;            
-              _this.addWarnMesg( this, _this.text.wrongValue );
+              _this.addWarnMesg( target, _this.text.wrongValue );
             }
           }
         },
@@ -605,6 +627,14 @@ var Valiform = (function(){
       if ( sibs.length === 0 ) { sibs.push( parentnode ); }
     }
     return sibs;
+  };
+  Valiform.prototype._getParentElement = function( el, tagname ) {
+    tagname = tagname.toUpperCase();
+    var parentE = el;
+    do {
+      parentE = parentE.parentElement;
+    } while ( parentE !== null && parentE.tagName.toUpperCase() !== tagname );
+    return parentE;
   };
   Valiform.prototype._elementChildren = function( element ) {
     var childNodes = element.childNodes,
