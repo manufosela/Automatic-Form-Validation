@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Demo ValiForm</title>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="../onready.js"></script>
+    <script src="valiform.js"></script>
+    <script>
+      var val, form;
+      ready( function(){
+        val = new Valiform();
+        form = document.getElementById("myForm");
+        form.addEventListener("submit", function(){
+          alert( "CALLBACK TO SEND FORM..." );
+          return false;
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+              <h1 style="color:#F93">Valiform.js - Complex Example</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+      <form id="myForm" data-validate="true">
+        <div id="field1">
+          <div class="form-group">
+              <label for="name">Your name</label>
+              <input class="form-control" id="name" name="name" type="text" placeholder="type your name" 
+                     data-required="true" data-tovalidate="alfa" />
+          </div>
+
+          <div class="form-group">
+              <label for="email">Email</label>
+              <input class="form-control" id="email" name="email" type="text" placeholder="type your email"
+                     data-required="true" data-tovalidate="email" />
+          </div>
+
+          <div class="form-group">
+              <label id="labelHasphone" data-name='hasphone'>Do you have a phone number?</label>
+              <label for="hasphoneNO">
+                <input id="hasphoneNO" name="hasphone" type="radio" data-required="true" value="nophone" />
+                No
+              </label>
+              <label for="hasphoneYES">
+                <input id="hasphoneYES" name="hasphone" type="radio" data-required="true" value="yesphone"/>
+                Yes
+              </label>
+              <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
+                <label for="phone">Phone number</label>
+                <input id="phone" name="phone" type="hidden" data-type="text" data-required="true" placeholder="Your telephone number" />
+              </fieldset>
+              <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
+                  <label for="allowcall">
+                    <input id="allowcall" name="allowcall" type="hidden" data-type="checkbox" data-required="true" value="ok" />
+                    Let me call by phone
+                  </label>
+              </fieldset>
+          </div>         
+
+          <div class="form-group">
+              <input id="accept" name="accept" type="checkbox"
+                     data-required="true" />
+              <span>Accept conditions</span>
+          </div>
+
+          <div class="button-group">
+            <button id="submitBtn" type="submit" class="btn btn-info" data-checkform="true">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
