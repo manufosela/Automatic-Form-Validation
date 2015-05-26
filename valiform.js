@@ -89,15 +89,15 @@ var Valiform = (function(){
       case "nummovil":
       case "movil":
       case "mobile":
-        return this.checkNumMovil( val );
+        return ( this.checkNumMovil( val ) > 0 );
       case "numfijo":
       case "fijo":
       case "landphone":
-        return this.checkNumFijo( val );
+        return ( this.checkNumFijo( val ) > 0 );
       case "telefono":
       case "tel": // fijo o movil
       case "telephone":
-        return this.checkTelephoneNumber( val );
+        return ( this.checkTelephoneNumber( val ) > 0 );
       case "cp":
       case "postalcode":
         return this.checkCodPostal( val );
@@ -110,7 +110,7 @@ var Valiform = (function(){
       case "nif":
       case "cif":
       case "nie":
-        return valida_nif_cif_nie( val );
+        return ( valida_nif_cif_nie( val ) > 0 );
       case "fecha":
       case "date":
         return isDate( val, "dmy" );
@@ -179,7 +179,7 @@ var Valiform = (function(){
     if ( suma === 10 ) {
       suma=0;
     }
-    return suma;
+    return ( suma > 0 );
   };
   Valiform.prototype.isAlpha = function( val ) {
     var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
@@ -257,12 +257,12 @@ var Valiform = (function(){
     if ( Luhn.substring(0,2) != "89" ) { return 0; }
     if ( this._CalculateLuhn( LuhnLess )==parseInt( LuhnDigit ) ) {
       if ( Luhn.length == 19 || Luhn.length == 20 ) {
-        return 1;
+        return true;
       } else {
-        return 0;
+        return false;
       }
     }
-    return 0;
+    return false;
   };
   Valiform.prototype._CalculateLuhn = function ( Luhn ) {
     var sum = 0;
