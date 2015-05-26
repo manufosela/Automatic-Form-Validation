@@ -31,14 +31,15 @@ var Valiform = (function(){
           e = e || window.event;
           var target = e.target || e.srcElement,
               f = target.formParam;
-          if ( _this.noEmptyFields() ) { okE = true; }
-          if ( _this.validateFields() ){ okV = true; }
+          okE = _this.noEmptyFields();
+          okV = _this.validateFields();
           if ( okE && okV ) { _this._triggerEvent( f, "submit" ); }
           return false;
         };
     for( ; i<lI; i++ ) {    
       this.markRequiredFields( dVld[i] );
       this.checkFieldsRealTime( dVld[i] );
+      this.hiddenFieldsActions( dVld[i] );
       dChk = dVld[i].querySelectorAll( "[type=submit][data-checkform=true]" );
       lJ = dChk.length; okE = false; okV = false;
       for ( ; j<lJ; j++ ) {
@@ -46,6 +47,14 @@ var Valiform = (function(){
         submitBtn.formParam = dVld[i];
         this._on( submitBtn, "click", _beforeSubmit);
       }
+    }
+
+    if ( document.getElementById( "valiformStyles" ) === null ) {
+      var style = document.createElement( "style" );
+      style.setAttribute( "id", "valiformStyles" );
+      style.setAttribute( "type", "text/css" );
+      style.innerHTML = ".isHidden{ display:none; }"; 
+      document.getElementsByTagName( "head" )[0].appendChild( style );
     }
   };
   Valiform.prototype.validate = function( val, type ) {
@@ -425,38 +434,40 @@ var Valiform = (function(){
   Valiform.prototype.checkRadioField = function( el ) {
     var empty = 0,
         atLeastOne = 0,
-        nameF = "[name=" + el.getAttribute( "name" ) +"]",
+        nameF = el.getAttribute( "name" ),
         formE = this._getParentElement( el, "form" ),
-        radF = formE.querySelectorAll( nameF ),
+        pEl = document.querySelector("[data-name=" + nameF + "]" ) || el,
+        radF = formE.querySelectorAll( "[name=" + nameF + "]" ),
         j = 0, l2 = radF.length;
     for ( ;j<l2; j++ ){
       if ( radF[j].checked ) { atLeastOne++; break; }
     }
     if ( atLeastOne === 0 ) {
-      this.addWarnMesg( el, this.text.requiredField );
+      this.addWarnMesg( pEl, this.text.requiredField );
       empty++;
     } else {
-      this.delWarnMesg( el );
+      this.delWarnMesg( pEl );
     }
     return empty;
   };
   Valiform.prototype.addWarnMesg = function( el, msg ) {
     var warning = document.createElement( "p" ),
         target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
-        name= target.getAttribute( "name" ),
+        name= target.getAttribute( "name" ) || target.getAttribute( "id" ) || "",
         id = "warning-"+name;
       if ( !document.getElementById( id ) ) {
         el = document.getElementById( target.getAttribute( "id" ) || el.id );
         warning.setAttribute( "style" , this.cssTextWarning );
         warning.setAttribute( "id" , id );
-        warning.innerHTML=msg;        
-        el.parentElement.appendChild( warning );
+        warning.innerHTML=msg;      
+        el.parentElement.insertBefore( warning, el.nextSibling);  
+        // el.parentElement.appendChild( warning );
         el.setAttribute( "style", "border:2px solid "+this.warningColor+"!important;" );
       }
   };
   Valiform.prototype.delWarnMesg = function( el ) {
     var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
-        name= target.getAttribute( "name" ) || "";
+        name= target.getAttribute( "name" )|| target.getAttribute( "id" ) || "";
     if ( document.getElementById( "warning-"+name ) ) {
       target.parentElement.removeChild( document.getElementById( "warning-"+name ) );
     }
@@ -494,52 +505,8 @@ var Valiform = (function(){
         fields = ( typeof textareaF != "undefined" )?inputF.concat( textareaF ):inputF,
         i = 0, l = fields.length, 
         el, re, ch, typeF,
-        myfnblur = function( e ) {
-          e = e || window.event;
-          var target = e.target || e.srcElement,
-              val = target.value || target.getAttribute( "value" ) || "",
-              type = target["data-tovalidate"] || target.getAttribute( "data-tovalidate" ) || "",
-              dreq = target["data-required"] || target.getAttribute( "data-required" ) || "",
-              re = ( dreq == "true" ),
-              ch = ( type !== "" ),
-              typeF = target.type || target.getAttribute( "type" ) || "";
-          if ( re ) {
-            if ( typeF == "radio" ) {
-              _this.checkRadioField( target );
-            } else if ( typeF == "checkbox" ) {
-              if ( !target.checked ) {
-                _this.addWarnMesg( target, _this.text.requiredField );
-                return true;  
-              } else {
-                _this.delWarnMesg( target );  
-              }
-            } else if ( val === "" ) {  
-              _this.addWarnMesg( target, _this.text.requiredField );
-              return true;
-            } else {
-              _this.delWarnMesg( target );
-            }
-          }
-          if ( ch ) {
-            if ( _this.validate( val, type ) ) {
-              _this.delWarnMesg( target );
-            } else {
-              _this.badValue++;            
-              _this.addWarnMesg( target, _this.text.wrongValue );
-            }
-          }
-        },
-        myfnSel = function( e ) {
-          e = e || window.event;
-          var target = e.target || e.srcElement,
-              val = target.value || target.getAttribute( "value" ) || "";
-          if ( val === "" ) {
-            _this.addWarnMesg( this, _this.text.requiredField );
-            return true;  
-          } else {
-            _this.delWarnMesg( this );  
-          }
-        };
+        myfnblur = function( e ) { _this.fnBlur( e ); },
+        myfnSel = function( e ) { _this.fnSel( e ); };
     for ( ;i<l; i++ ) {
       el = document.getElementById( fields[i].getAttribute( "id" ) );
       re = el.getAttribute( "data-required" );
@@ -559,10 +526,109 @@ var Valiform = (function(){
       el = document.getElementById( selectF[i].getAttribute( "id" ) );
       re = el.getAttribute( "data-required" );
       if ( re == "true" ) {
-        _this._off( el , "click", myfnSel );
+        //_this._off( el , "click", myfnSel );
         _this._on( el, "click", myfnSel );
-        _this._off( el, "blur", myfnSel );
+        //_this._off( el, "blur", myfnSel );
         _this._on( el, "blur", myfnSel );
+      }
+    }
+  };
+  Valiform.prototype.hiddenFieldsActions = function(){
+    //TODO: hay que tratar 2 atributos: data-type y data-activate y los input type hidden
+    var _this = this,
+        toActivate = document.querySelectorAll( "[data-activate]" ),
+        i=0, l=toActivate.length, elAc, 
+        nameAc, elAcs,
+        j, l2,
+        myShowHidden = function( e ){ _this.fnShowHidden( e ); };
+    for( ;i<l; i++ ){
+      this.addClass( toActivate[i], "isHidden" ); // Todos los elementos que tengan el atributo data-activate deben estar display:none
+      elAc = document.getElementById( toActivate[i].getAttribute( "data-activate" ) );
+      if ( elAc ) {
+        nameAc = elAc.getAttribute( "name" );
+        elAcs = this._getParentElement( toActivate[i], "form" ).querySelectorAll( "[name="+nameAc+"]" );
+        j = 0; l2 = elAcs.length;
+        for( ;j<l2; j++ ) {
+          this._on( elAcs[j], "blur", myShowHidden );
+          this._on( elAcs[j], "click", myShowHidden );
+        }
+      }
+    }
+  };
+  Valiform.prototype.fnBlur = function( e ) {
+    e = e || window.event;
+    var target = e.target || e.srcElement,
+        val = target.value || target.getAttribute( "value" ) || "",
+        type = target["data-tovalidate"] || target.getAttribute( "data-tovalidate" ) || "",
+        dreq = target["data-required"] || target.getAttribute( "data-required" ) || "",
+        re = ( dreq == "true" ),
+        ch = ( type !== "" ),
+        typeF = target.type || target.getAttribute( "type" ) || "";
+    if ( re ) {
+      if ( typeF == "radio" ) {
+        this.checkRadioField( target );
+      } else if ( typeF == "checkbox" ) {
+        if ( !target.checked ) {
+          this.addWarnMesg( target, this.text.requiredField );
+          return true;  
+        } else {
+          this.delWarnMesg( target );  
+        }
+      } else if ( val === "" ) {  
+        this.addWarnMesg( target, this.text.requiredField );
+        return true;
+      } else {
+        this.delWarnMesg( target );
+      }
+    }
+    if ( ch ) {
+      if ( this.validate( val, type ) ) {
+        this.delWarnMesg( target );
+      } else {
+        this.badValue++;            
+        this.addWarnMesg( target, this.text.wrongValue );
+      }
+    }
+  };
+  Valiform.prototype.fnSel = function( e ) {
+    e = e || window.event;
+    var target = e.target || e.srcElement,
+        val = target.value || target.getAttribute( "value" ) || "";
+    if ( val === "" ) {
+      this.addWarnMesg( target, this.text.requiredField );
+      return true;  
+    } else {
+      this.delWarnMesg( target );  
+    }
+  };
+  Valiform.prototype.fnShowHidden = function( e ){
+    e = e || window.event;
+    var target = e.target || e.srcElement,
+    id = target.id || target.getAttribute( "id" ) || "",
+    toActivate = document.querySelectorAll( "[data-activate="+id+"]" ),
+    toDeactivate = document.querySelectorAll( "[data-deactivate="+id+"]" ),
+    i = 0, lA = toActivate.length, lD = toDeactivate.length, 
+    dataType, inHid, 
+    j, l2;
+    if ( lA > 0 ) {
+      for( ;i<lA; i++ ) {
+        this.removeClass( toActivate[i], "isHidden" );
+        inHid = toActivate[i].querySelectorAll( "input[type=hidden]" );
+        j=0; l2=inHid.length;
+        for( ;j<l2; j++ ) {
+          dataType = inHid[j].getAttribute( "data-type" ) || "";
+          if ( dataType !== "" ){ inHid[j].setAttribute( "type", dataType ); }
+        }
+      }
+    } 
+    if ( lD > 0 ) {
+      for( ;i<lD; i++ ) {
+        this.addClass( toDeactivate[i], "isHidden" );
+        inHid = toDeactivate[i].querySelectorAll( "input[data-type]" );
+        j=0; l2=inHid.length;
+        for( ;j<l2; j++ ) {
+          inHid[j].setAttribute( "type", "hidden" );
+        }
       }
     }
   };
