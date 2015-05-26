@@ -2,11 +2,15 @@
 
 Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
 
-##Live Codepen Example:
-[http://codepen.io/manufosela/pen/PqZdrq]
+##Example:
+* [http://codepen.io/manufosela/pen/PqZdrq] (Live Codepen)
+* [http://manufosela.es/lib/valiform/demo.html]
 
-##Use 
-Frist add in yout HTML
+##Complex Example:
+[http://manufosela.es/lib/valiform/demo2.html]
+
+##Simple Use 
+First add in yout HTML
 ```javascript
 <script type="text/javascript" src="valiform.min.js"></script>
 ```
@@ -93,4 +97,51 @@ Valiform.js can validate the next fields type:
     alert( "FORM CORRECT. SENDING FORM...");
     return false;
   });
+```
+
+##Complex uses
+
+###data-name attribute
+
+Add a *data-name* attribute to form fields extra label near of radio or checkbox fields, to show error message when these fields are wrong.
+*data-name* atribute has the value of the name of a radio o checkbox field marked to be checked.
+When the named field has a wrong value it is marked instead of the radio or checkbox field.
+
+```html
+<div class="form-group">
+  <label id="labelHasphone" data-name='hasphone'>Do you have a phone number?</label>
+  <label for="hasphoneNO">
+    <input id="hasphoneNO" name="hasphone" type="radio" data-required="true" value="nophone" />
+    No
+  </label>
+  <label for="hasphoneYES">
+    <input id="hasphoneYES" name="hasphone" type="radio" data-required="true" value="yesphone"/>
+    Yes
+  </label>
+</div>
+```
+
+###data-activate / data-deactivate and data-type
+
+Add a *data-activate* and *data-deactivate* attributes to form fields to show fields when a value is select in referered data- value.
+
+The fields with *data-activate/data-deactivate* must be a type hidden and must have a attribute *data-type*, indicating the type of field to show when not hidden. 
+
+```html
+<div class="form-group">
+  <label id="labelHasphone" data-name='hasphone'>Do you have a phone number?</label>
+  <label for="hasphoneNO">
+    <input id="hasphoneNO" name="hasphone" type="radio" data-required="true" value="nophone" />
+    No
+  </label>
+  <label for="hasphoneYES">
+    <input id="hasphoneYES" name="hasphone" type="radio" data-required="true" value="yesphone"/>
+    Yes
+  </label>
+</div>
+
+<fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
+  <label for="phone">Phone number</label>
+  <input id="phone" name="phone" type="hidden" data-type="text" data-required="true" data-tovalidate="telephone" placeholder="Your telephone number" />
+</fieldset>
 ```
