@@ -58,7 +58,7 @@ var Valiform = (function(){
     }
   };
   Valiform.prototype.validate = function( val, type ) {
-    if ( val === "" || val === null || ( val !== "" && type != "noempty" ) ) { return true; }
+    if ( val === "" || val === null ) { return true; }
     switch( type ) {
       case "int":
       case "integer":
