@@ -3,11 +3,11 @@
 Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
 
 ##Example:
-* [http://codepen.io/manufosela/pen/PqZdrq] (Live Codepen)
-* [http://manufosela.es/lib/valiform/demo.html]
+* http://codepen.io/manufosela/pen/PqZdrq (Live Codepen)
+* http://manufosela.es/lib/valiform/demo.html
 
 ##Complex Example:
-[http://manufosela.es/lib/valiform/demo2.html]
+http://manufosela.es/lib/valiform/demo2.html
 
 ##Simple Use 
 First add in yout HTML
