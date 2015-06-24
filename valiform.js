@@ -1,11 +1,28 @@
-/* valiform.js library by @manufosela - 2015 */
-/* works IE8+, FF, Chrome */
-/* MIT License (MIT) Copyright (c) 2015 @manufosela */
-/* It is independent of any library or framework */
 /* Valiform.js by @manufosela - 2015 */
 var Valiform = (function(){
 
   'use strict';
+
+  window.isIE = window.isIE || function() {
+    var myNav = navigator.userAgent.toLowerCase(),
+        re=new RegExp( "msie" );
+    return ( re.exec( myNav ) !== null );
+  };
+
+  /*if ( isIE() && isIE()<=7 ) {
+    (function(d, s) {
+      d=document, s=d.createStyleSheet();
+      d.querySelectorAll = function(r, c, i, j, a) {
+        a=d.all, c=[], r = r.replace(/\[for\b/gi, '[htmlFor').split(',');
+        for (i=r.length; i--;) {
+          s.addRule(r[i], 'k:v');
+          for (j=a.length; j--;) { a[j].currentStyle.k && c.push(a[j]); }
+          s.removeRule(0);
+        }
+        return c;
+      };
+    })();
+  }*/
   
   Valiform = function( confOpt ) {
     /**** CONFIGURE OPTIONS **********/
@@ -25,14 +42,17 @@ var Valiform = (function(){
     this.badValue = 0;
     var _this = this,
         dVld = document.querySelectorAll( "form[data-validate=true]" ),
-        dChk, i = 0, lI = dVld.length, j = 0, lJ, okE, okV,
+        dChk, i = 0, lI = dVld.length, 
+        j = 0, lJ, 
+        okE, okV,
+        formId,
         _beforeSubmit = function( e ) {
           if( e.preventDefault ) { e.preventDefault(); e.stopPropagation(); } else { e.returnValue = false; }
           e = e || window.event;
           var target = e.target || e.srcElement,
               f = target.formParam;
-          okE = _this.noEmptyFields();
-          okV = _this.validateFields();
+          if ( _this.noEmptyFields() ) { okE = true; }
+          if ( _this.validateFields() ){ okV = true; }
           if ( okE && okV ) { _this._triggerEvent( f, "submit" ); }
           return false;
         };
@@ -40,7 +60,8 @@ var Valiform = (function(){
       this.markRequiredFields( dVld[i] );
       this.checkFieldsRealTime( dVld[i] );
       this.hiddenFieldsActions( dVld[i] );
-      dChk = dVld[i].querySelectorAll( "[type=submit][data-checkform=true]" );
+      formId = dVld[i].getAttribute( "id" );
+      dChk = document.querySelectorAll( "#"+formId+" [type=submit][data-checkform=true]" );
       lJ = dChk.length; okE = false; okV = false;
       for ( ; j<lJ; j++ ) {
         var submitBtn = dChk[j];
@@ -53,12 +74,16 @@ var Valiform = (function(){
       var style = document.createElement( "style" );
       style.setAttribute( "id", "valiformStyles" );
       style.setAttribute( "type", "text/css" );
-      style.innerHTML = ".isHidden{ display:none; }"; 
+      if ( isIE() ) {
+        style.styleSheet.cssText = ".isHidden{ display:none; }"; 
+      } else {
+        style.innerHTML = ".isHidden{ display:none; }"; 
+      }
       document.getElementsByTagName( "head" )[0].appendChild( style );
     }
   };
   Valiform.prototype.validate = function( val, type ) {
-    if ( val === "" || val === null ) { return true; }
+    if ( val === "" || val === null || ( val !== "" && type == "noempty" ) ) { return true; }
     switch( type ) {
       case "int":
       case "integer":
@@ -89,15 +114,15 @@ var Valiform = (function(){
       case "nummovil":
       case "movil":
       case "mobile":
-        return ( this.checkNumMovil( val ) > 0 );
+        return this.checkNumMovil( val );
       case "numfijo":
       case "fijo":
       case "landphone":
-        return ( this.checkNumFijo( val ) > 0 );
+        return this.checkNumFijo( val );
       case "telefono":
       case "tel": // fijo o movil
       case "telephone":
-        return ( this.checkTelephoneNumber( val ) > 0 );
+        return this.checkTelephoneNumber( val );
       case "cp":
       case "postalcode":
         return this.checkCodPostal( val );
@@ -110,7 +135,7 @@ var Valiform = (function(){
       case "nif":
       case "cif":
       case "nie":
-        return ( valida_nif_cif_nie( val ) > 0 );
+        return valida_nif_cif_nie( val );
       case "fecha":
       case "date":
         return isDate( val, "dmy" );
@@ -179,25 +204,25 @@ var Valiform = (function(){
     if ( suma === 10 ) {
       suma=0;
     }
-    return ( suma > 0 );
+    return suma;
   };
   Valiform.prototype.isAlpha = function( val ) {
-    var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
+    var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñçÇ\']+$/;
     var a = regexp.test( val );
     return a;
   };
   Valiform.prototype.isAlphaGuion = function( val ) {
-    var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\'\-]+$/;
+    var regexp = /^[A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñçÇ\'\-]+$/;
     var a = regexp.test( val );
     return a;
   };
   Valiform.prototype.isAlphaNumeric = function( val ){
-    var regexp = /^[0-9A-Za-záéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
+    var regexp = /^[0-9A-Za-záéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñçÇ\']+$/;
     var a = regexp.test( val );
     return a;  
   };
   Valiform.prototype.isAlphaNumericSpace = function ( val ) {
-    var regexp = /^[0-9A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñ\']+$/;
+    var regexp = /^[0-9A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñçÇ\']+$/;
     var a = regexp.test( val );
     return a;
   };
@@ -257,12 +282,12 @@ var Valiform = (function(){
     if ( Luhn.substring(0,2) != "89" ) { return 0; }
     if ( this._CalculateLuhn( LuhnLess )==parseInt( LuhnDigit ) ) {
       if ( Luhn.length == 19 || Luhn.length == 20 ) {
-        return true;
+        return 1;
       } else {
-        return false;
+        return 0;
       }
     }
-    return false;
+    return 0;
   };
   Valiform.prototype._CalculateLuhn = function ( Luhn ) {
     var sum = 0;
@@ -370,19 +395,24 @@ var Valiform = (function(){
     if ( typeof f === "undefined" ) { return false; }
     html = ( typeof html !== "undefined" )? html:"*";
     var _this = this,
-        aEl = f.querySelectorAll("[data-required=true]" ),
+        formId = f.getAttribute( "id" ),
+        aEl = document.querySelectorAll("#"+formId+" [data-required=true]" ),
         i = 0, l = aEl.length,
         asterisco, sb, idAst;
     for( ; i<l; i++ ) {
-      if ( aEl[i].getAttribute( "type" ) != "hidden" ) {
+      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-type" ) != "hiddenON" ) {
         idAst = aEl[i].getAttribute( "name" );
         if ( document.getElementById ( "asterisco_"+idAst ) === null ) {
           asterisco = document.createElement( "span" );
           asterisco.setAttribute( "id", "asterisco_" + idAst );
           asterisco.setAttribute( "style", this.asteriskStyle );
           asterisco.innerHTML=html;
-          sb = _this._getAllSiblings( aEl[i], "LABEL" );
-          if ( sb.length > 0 ) { sb[0].appendChild( asterisco ); }
+          if ( document.getElementById( "label_"+idAst ) !== null ) {
+            document.getElementById( "label_"+idAst ).appendChild( asterisco );
+          } else {
+            sb = _this._getAllSiblings( aEl[i], "LABEL" );
+            if ( sb.length > 0 ) { sb[0].appendChild( asterisco ); }
+          }
         }
       }
     }
@@ -409,7 +439,7 @@ var Valiform = (function(){
         val, typeF,
         i = 0, l = aEl.length;
     for( ; i<l; i++ ) {
-      if ( aEl[i].getAttribute( "type" ) != "hidden" ) {
+      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-type" ) != "hiddenON" ) {
         val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
         typeF = aEl[i].getAttribute( "type" ) || aEl[i].type || "";
         if ( typeF == "radio" ) {
@@ -436,8 +466,9 @@ var Valiform = (function(){
         atLeastOne = 0,
         nameF = el.getAttribute( "name" ),
         formE = this._getParentElement( el, "form" ),
+        idFormE = formE.getAttribute( "id" ),
         pEl = document.querySelector("[data-name=" + nameF + "]" ) || el,
-        radF = formE.querySelectorAll( "[name=" + nameF + "]" ),
+        radF = document.querySelectorAll( "#"+idFormE+" [name=" + nameF + "]" ),
         j = 0, l2 = radF.length;
     for ( ;j<l2; j++ ){
       if ( radF[j].checked ) { atLeastOne++; break; }
@@ -526,27 +557,29 @@ var Valiform = (function(){
       el = document.getElementById( selectF[i].getAttribute( "id" ) );
       re = el.getAttribute( "data-required" );
       if ( re == "true" ) {
-        //_this._off( el , "click", myfnSel );
         _this._on( el, "click", myfnSel );
-        //_this._off( el, "blur", myfnSel );
+        _this._on( el, "change", myfnSel );
         _this._on( el, "blur", myfnSel );
       }
     }
   };
   Valiform.prototype.hiddenFieldsActions = function(){
-    //TODO: hay que tratar 2 atributos: data-type y data-activate y los input type hidden
+    //TODO: hay que tratar 2 atributos: data-type=hiddenON y data-activate
     var _this = this,
         toActivate = document.querySelectorAll( "[data-activate]" ),
         i=0, l=toActivate.length, elAc, 
         nameAc, elAcs,
         j, l2,
+        parentEl, parentElId,
         myShowHidden = function( e ){ _this.fnShowHidden( e ); };
     for( ;i<l; i++ ){
       this.addClass( toActivate[i], "isHidden" ); // Todos los elementos que tengan el atributo data-activate deben estar display:none
       elAc = document.getElementById( toActivate[i].getAttribute( "data-activate" ) );
       if ( elAc ) {
         nameAc = elAc.getAttribute( "name" );
-        elAcs = this._getParentElement( toActivate[i], "form" ).querySelectorAll( "[name="+nameAc+"]" );
+        parentEl = this._getParentElement( toActivate[i], "form" );
+        parentElId = parentEl.getAttribute( "id" );
+        elAcs = document.querySelectorAll( "#"+parentElId+" [name="+nameAc+"]" );
         j = 0; l2 = elAcs.length;
         for( ;j<l2; j++ ) {
           this._on( elAcs[j], "blur", myShowHidden );
@@ -604,30 +637,39 @@ var Valiform = (function(){
   Valiform.prototype.fnShowHidden = function( e ){
     e = e || window.event;
     var target = e.target || e.srcElement,
+    toActivateId, toDeactivateId,
     id = target.id || target.getAttribute( "id" ) || "",
     toActivate = document.querySelectorAll( "[data-activate="+id+"]" ),
     toDeactivate = document.querySelectorAll( "[data-deactivate="+id+"]" ),
     i = 0, lA = toActivate.length, lD = toDeactivate.length, 
-    dataType, inHid, 
-    j, l2;
+    inHid, j, l2,
+    typEl, parEl, tagEl;
     if ( lA > 0 ) {
       for( ;i<lA; i++ ) {
         this.removeClass( toActivate[i], "isHidden" );
-        inHid = toActivate[i].querySelectorAll( "input[type=hidden]" );
+        toActivateId = toActivate[i].getAttribute( "id" );
+        inHid = document.querySelectorAll( "#"+toActivateId+" input[data-type=hiddenON]" );
         j=0; l2=inHid.length;
         for( ;j<l2; j++ ) {
-          dataType = inHid[j].getAttribute( "data-type" ) || "";
-          if ( dataType !== "" ){ inHid[j].setAttribute( "type", dataType ); }
+          inHid[j].setAttribute( "data-type", "hiddenOFF" ); 
         }
       }
     } 
     if ( lD > 0 ) {
       for( ;i<lD; i++ ) {
         this.addClass( toDeactivate[i], "isHidden" );
-        inHid = toDeactivate[i].querySelectorAll( "input[data-type]" );
+        toDeactivateId = toDeactivate[i].getAttribute( "id" );
+        inHid = document.querySelectorAll( "#"+toDeactivateId+" input[data-type=hiddenOFF]" );
         j=0; l2=inHid.length;
         for( ;j<l2; j++ ) {
-          inHid[j].setAttribute( "type", "hidden" );
+          inHid[j].setAttribute( "data-type", "hiddenON" );
+          typEl = inHid[j].getAttribute( "type" ) || inHid[j].type;
+          parEl = inHid[j].parentElement;
+          tagEl = parEl.tagName.toUpperCase() || "";
+          if ( tagEl == "LABEL" ) {
+            if ( typEl == "radio" ) { this.removeClass( parEl, 'r_on' ); }
+            if ( typEl == "checkbox" ) { this.removeClass( parEl, 'c_on' ); }
+          }
         }
       }
     }
@@ -749,25 +791,3 @@ var Valiform = (function(){
     };
   }
 }());
-/*
-The MIT License (MIT)
-Copyright (c) 2015 @manufosela
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
