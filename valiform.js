@@ -400,7 +400,7 @@ var Valiform = (function(){
         i = 0, l = aEl.length,
         asterisco, sb, idAst;
     for( ; i<l; i++ ) {
-      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-type" ) != "hiddenON" ) {
+      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-hidden" ) != "true" ) {
         idAst = aEl[i].getAttribute( "name" );
         if ( document.getElementById ( "asterisco_"+idAst ) === null ) {
           asterisco = document.createElement( "span" );
@@ -439,7 +439,7 @@ var Valiform = (function(){
         val, typeF,
         i = 0, l = aEl.length;
     for( ; i<l; i++ ) {
-      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-type" ) != "hiddenON" ) {
+      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-hidden" ) != "true" ) {
         val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
         typeF = aEl[i].getAttribute( "type" ) || aEl[i].type || "";
         if ( typeF == "radio" ) {
@@ -564,7 +564,7 @@ var Valiform = (function(){
     }
   };
   Valiform.prototype.hiddenFieldsActions = function(){
-    //TODO: hay que tratar 2 atributos: data-type=hiddenON y data-activate
+    //TODO: hay que tratar 2 atributos: data-hidden=true y data-activate
     var _this = this,
         toActivate = document.querySelectorAll( "[data-activate]" ),
         i=0, l=toActivate.length, elAc, 
@@ -648,10 +648,10 @@ var Valiform = (function(){
       for( ;i<lA; i++ ) {
         this.removeClass( toActivate[i], "isHidden" );
         toActivateId = toActivate[i].getAttribute( "id" );
-        inHid = document.querySelectorAll( "#"+toActivateId+" input[data-type=hiddenON]" );
+        inHid = document.querySelectorAll( "#"+toActivateId+" input[data-hidden=true]" );
         j=0; l2=inHid.length;
         for( ;j<l2; j++ ) {
-          inHid[j].setAttribute( "data-type", "hiddenOFF" ); 
+          inHid[j].setAttribute( "data-hidden", "true" ); 
         }
       }
     } 
@@ -659,10 +659,10 @@ var Valiform = (function(){
       for( ;i<lD; i++ ) {
         this.addClass( toDeactivate[i], "isHidden" );
         toDeactivateId = toDeactivate[i].getAttribute( "id" );
-        inHid = document.querySelectorAll( "#"+toDeactivateId+" input[data-type=hiddenOFF]" );
+        inHid = document.querySelectorAll( "#"+toDeactivateId+" input[data-hidden=false]" );
         j=0; l2=inHid.length;
         for( ;j<l2; j++ ) {
-          inHid[j].setAttribute( "data-type", "hiddenON" );
+          inHid[j].setAttribute( "data-hidden", "true" );
           typEl = inHid[j].getAttribute( "type" ) || inHid[j].type;
           parEl = inHid[j].parentElement;
           tagEl = parEl.tagName.toUpperCase() || "";

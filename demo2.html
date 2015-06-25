@@ -41,7 +41,7 @@
           </div>
 
           <div class="form-group">
-              <label id="labelHasphone" data-name='hasphone'>Do you have a phone number?</label>
+              <label id="label_hasphone" data-name='hasphone'>Do you have a phone number?</label>
               <label for="hasphoneNO">
                 <input id="hasphoneNO" name="hasphone" type="radio" data-required="true" value="nophone" />
                 No
@@ -52,11 +52,11 @@
               </label>
               <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
                 <label for="phone">Phone number</label>
-                <input id="phone" name="phone" type="hidden" data-type="text" data-required="true" data-tovalidate="telephone" placeholder="Your telephone number" />
+                <input id="phone" name="phone" data-type="hiddenON" type="text" data-required="true" data-tovalidate="telephone" placeholder="Your telephone number" />
               </fieldset>
               <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
                   <label for="allowcall">
-                    <input id="allowcall" name="allowcall" type="hidden" data-type="checkbox" value="ok" />
+                    <input id="allowcall" name="allowcall" data-type="hiddenON" type="checkbox" value="ok" />
                     Let me call by phone
                   </label>
               </fieldset>
