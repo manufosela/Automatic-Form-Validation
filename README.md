@@ -3,11 +3,11 @@
 Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
 
 ##Example:
-* [http://codepen.io/manufosela/pen/PqZdrq] (Live Codepen)
-* [http://manufosela.es/lib/valiform/demo.html]
+* http://codepen.io/manufosela/pen/PqZdrq (Live Codepen)
+* http://manufosela.es/lib/valiform/demo.html
 
 ##Complex Example:
-[http://manufosela.es/lib/valiform/demo2.html]
+http://manufosela.es/lib/valiform/demo2.html
 
 ##Simple Use 
 First add in yout HTML
@@ -121,11 +121,11 @@ When the named field has a wrong value it is marked instead of the radio or chec
 </div>
 ```
 
-###data-activate / data-deactivate and data-type
+###data-activate / data-deactivate and data-type=hiddenON
 
 Add a *data-activate* and *data-deactivate* attributes to form fields to show fields when a value is select in referered data- value.
 
-The fields with *data-activate/data-deactivate* must be a type hidden and must have a attribute *data-type*, indicating the type of field to show when not hidden. 
+The fields with *data-activate/data-deactivate* must be a data-type hiddenON and must have the attribute *type*, indicating the type of field to show when not hidden. 
 
 ```html
 <div class="form-group">
@@ -142,6 +142,6 @@ The fields with *data-activate/data-deactivate* must be a type hidden and must h
 
 <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
   <label for="phone">Phone number</label>
-  <input id="phone" name="phone" type="hidden" data-type="text" data-required="true" data-tovalidate="telephone" placeholder="Your telephone number" />
+  <input id="phone" name="phone" data-type="hiddenON" type="text" data-required="true" data-tovalidate="telephone" placeholder="Your telephone number" />
 </fieldset>
 ```
