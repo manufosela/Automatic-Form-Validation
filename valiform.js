@@ -4,12 +4,14 @@ var Valiform = (function(){
   'use strict';
 
   window.isIE = window.isIE || function() {
-    var myNav = navigator.userAgent.toLowerCase(),
-        re=new RegExp( "msie" );
-    return ( re.exec( myNav ) !== null );
+    var myNav = navigator.userAgent.toLowerCase();
+    return ( myNav.indexOf( 'msie' ) != -1) ? parseInt( myNav.split( 'msie' )[1]) : false;
+    // var myNav = navigator.userAgent.toLowerCase(), re=new RegExp( "msie" );
+    // return ( re.exec( myNav ) !== null );
   };
 
-  /*if ( isIE() && isIE()<=7 ) {
+/* jshint ignore:start */
+  if ( isIE() ) {
     (function(d, s) {
       d=document, s=d.createStyleSheet();
       d.querySelectorAll = function(r, c, i, j, a) {
@@ -22,16 +24,18 @@ var Valiform = (function(){
         return c;
       };
     })();
-  }*/
-  
+  }
+/* jshint ignore:end */
+
   Valiform = function( confOpt ) {
     /**** CONFIGURE OPTIONS **********/
-    confOpt = confOpt || { warningColor:"#F60", asteriskStyle:"color: #F00!important; font-size: 15px!important;", cssTextWarning:"font-size:12px!important; color:#F60!important; font-weight:bold!important; margin-bottom:10px!important;" };
-    
+    confOpt = confOpt || { warningColor:"#F60", asteriskStyle:"color: #F00!important; font-size: 15px!important; padding-left:3px;", cssTextWarning:"font-size:12px!important; color:#F60!important; font-weight:bold!important; margin-bottom:10px!important;" };
+
     this.warningColor = confOpt.warningColor || "#F00";
-    this.asteriskStyle = confOpt.asteriskStyle || "color:#F00!important";
+    this.asteriskStyle = confOpt.asteriskStyle || "color:#F00!important; padding-left:3px";
     this.cssTextWarning = confOpt.cssTextWarning || "color:#F00!important";
 
+    this.numWarnings = 0;
     this.text = {
       requiredField: "campo requerido",
       wrongValue: "valor incorrecto"
@@ -42,8 +46,8 @@ var Valiform = (function(){
     this.badValue = 0;
     var _this = this,
         dVld = document.querySelectorAll( "form[data-validate=true]" ),
-        dChk, i = 0, lI = dVld.length, 
-        j = 0, lJ, 
+        dChk, i = 0, lI = dVld.length,
+        j = 0, lJ,
         okE, okV,
         formId,
         _beforeSubmit = function( e ) {
@@ -51,14 +55,15 @@ var Valiform = (function(){
           e = e || window.event;
           var target = e.target || e.srcElement,
               f = target.formParam;
-          if ( _this.noEmptyFields() ) { okE = true; }
-          if ( _this.validateFields() ){ okV = true; }
+          okE = _this.noEmptyFields();
+          okV = _this.validateFields();
           if ( okE && okV ) { _this._triggerEvent( f, "submit" ); }
+          _this.checkFieldsRealTime( f );
           return false;
         };
-    for( ; i<lI; i++ ) {    
+    for( ; i<lI; i++ ) {
       this.markRequiredFields( dVld[i] );
-      this.checkFieldsRealTime( dVld[i] );
+      if ( dVld[i].getAttribute( "data-checkrealtime" ) === "true" ) { this.checkFieldsRealTime( dVld[i] ); }
       this.hiddenFieldsActions( dVld[i] );
       formId = dVld[i].getAttribute( "id" );
       dChk = document.querySelectorAll( "#"+formId+" [type=submit][data-checkform=true]" );
@@ -75,9 +80,9 @@ var Valiform = (function(){
       style.setAttribute( "id", "valiformStyles" );
       style.setAttribute( "type", "text/css" );
       if ( isIE() ) {
-        style.styleSheet.cssText = ".isHidden{ display:none; }"; 
+        style.styleSheet.cssText = ".isHidden{ display:none; }";
       } else {
-        style.innerHTML = ".isHidden{ display:none; }"; 
+        style.innerHTML = ".isHidden{ display:none; }";
       }
       document.getElementsByTagName( "head" )[0].appendChild( style );
     }
@@ -179,7 +184,7 @@ var Valiform = (function(){
   };
 
   Valiform.prototype.verificaNumTarjetaCredito = function( numtarjeta ) {
-    var result = false, 
+    var result = false,
         firstDigitCorrect = ( numtarjeta[0] == 3 || numtarjeta[0] == 4 || numtarjeta[0] == 5 || numtarjeta[0] == 6 );
     if ( numtarjeta.length == 16 && firstDigitCorrect ) {
       result = ( this._getCtrlNumberCreditCard( numtarjeta ) == numtarjeta[15] );
@@ -219,7 +224,7 @@ var Valiform = (function(){
   Valiform.prototype.isAlphaNumeric = function( val ){
     var regexp = /^[0-9A-Za-záéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñçÇ\']+$/;
     var a = regexp.test( val );
-    return a;  
+    return a;
   };
   Valiform.prototype.isAlphaNumericSpace = function ( val ) {
     var regexp = /^[0-9A-Za-z\s\xF1\xD1áéíóúÁÉÍÓÚäëïöüAËÏÖÜÑñçÇ\']+$/;
@@ -229,7 +234,7 @@ var Valiform = (function(){
   Valiform.prototype.isDate = function( txtDate, mode ) {
     var currVal = txtDate;
     if(currVal === '') { return false; }
-    //Declare Regex 
+    //Declare Regex
     var rxDatePattern = /^(\d{1,2})(\/|-)(\d{1,2})(\/|-)(\d{4})$/;
     var dtArray = currVal.match( rxDatePattern ); // is format OK?
     if (dtArray === null) { return false; }
@@ -319,7 +324,7 @@ var Valiform = (function(){
   };
 
   Valiform.prototype._getLetraNIF = function( dni ) {
-    var cadenadni = "TRWAGMYFPDXBNJZSQVHLCKE", 
+    var cadenadni = "TRWAGMYFPDXBNJZSQVHLCKE",
         posicion = dni % 23,
         letra = cadenadni.charAt( posicion );
     return letra;
@@ -398,9 +403,11 @@ var Valiform = (function(){
         formId = f.getAttribute( "id" ),
         aEl = document.querySelectorAll("#"+formId+" [data-required=true]" ),
         i = 0, l = aEl.length,
-        asterisco, sb, idAst;
+        asterisco, sb, idAst,
+        typ;
     for( ; i<l; i++ ) {
-      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-hidden" ) != "true" ) {
+      typ = aEl[i].getAttribute( "type" ) || aEl[i].type;
+      if ( typ != "hidden" && aEl[i].getAttribute( "data-hidden" ) != "true" ) {
         idAst = aEl[i].getAttribute( "name" );
         if ( document.getElementById ( "asterisco_"+idAst ) === null ) {
           asterisco = document.createElement( "span" );
@@ -426,8 +433,9 @@ var Valiform = (function(){
     for( ; i<l; i++ ) {
       val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
       type = aEl[i].getAttribute( "data-tovalidate" ) || "";
-      if ( !_this.validate( val, type ) ) { 
-        this.badValue++; 
+      if ( !_this.validate( val, type ) ) {
+        _this.addWarnMesg( aEl[i], _this.text.wrongValue );
+        this.badValue++;
       }
     }
     return ( this.badValue===0 );
@@ -437,9 +445,11 @@ var Valiform = (function(){
         empty=0,
         aEl = document.querySelectorAll( "[data-required=true]" ),
         val, typeF,
-        i = 0, l = aEl.length;
+        i = 0, l = aEl.length,
+        typ;
     for( ; i<l; i++ ) {
-      if ( aEl[i].getAttribute( "type" ) != "hidden" && aEl[i].getAttribute( "data-hidden" ) != "true" ) {
+      typ = aEl[i].getAttribute( "type" ) || aEl[i].type;
+      if ( typ != "hidden" && aEl[i].getAttribute( "data-hidden" ) != "true" ) {
         val = aEl[i].getAttribute( "value" ) || aEl[i].value || "";
         typeF = aEl[i].getAttribute( "type" ) || aEl[i].type || "";
         if ( typeF == "radio" ) {
@@ -451,9 +461,9 @@ var Valiform = (function(){
           } else {
             _this.delWarnMesg( aEl[i] );
           }
-        } else if ( val === "" ) { 
+        } else if ( val === "" ) {
           _this.addWarnMesg( aEl[i], _this.text.requiredField );
-          empty++; 
+          empty++;
         } else {
           _this.delWarnMesg( aEl[i] );
         }
@@ -482,19 +492,27 @@ var Valiform = (function(){
     return empty;
   };
   Valiform.prototype.addWarnMesg = function( el, msg ) {
-    var warning = document.createElement( "p" ),
+    var warning,
         target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
         name= target.getAttribute( "name" ) || target.getAttribute( "id" ) || "",
         id = "warning-"+name;
       if ( !document.getElementById( id ) ) {
         el = document.getElementById( target.getAttribute( "id" ) || el.id );
-        warning.setAttribute( "style" , this.cssTextWarning );
+        warning = document.createElement( "p" );
         warning.setAttribute( "id" , id );
-        warning.innerHTML=msg;      
-        el.parentElement.insertBefore( warning, el.nextSibling);  
-        // el.parentElement.appendChild( warning );
-        el.setAttribute( "style", "border:2px solid "+this.warningColor+"!important;" );
+      } else {
+        warning = document.getElementById( id );
       }
+      warning.setAttribute( "class" , "warning" );
+      warning.setAttribute( "style" , this.cssTextWarning );
+      warning.innerHTML=msg;
+      var elNextSibling = (el.type==="radio")?el.nextSibling.nextSibling:el.nextSibling;
+      el.parentElement.insertBefore( warning, elNextSibling );
+      // el.parentElement.appendChild( warning );
+      el.setAttribute( "style", "border:2px solid "+this.warningColor+"!important;" );
+      var pos = el.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70;
+      this.numWarnings++;
+      if ( this.numWarnings == 1 ) { $( 'html, body' ).animate( { scrollTop: pos }, 'slow' ); }
   };
   Valiform.prototype.delWarnMesg = function( el ) {
     var target = ( typeof el.getAttribute != "undefined" )?el:window.event.srcElement,
@@ -504,6 +522,7 @@ var Valiform = (function(){
     }
     //this.removeClass( el, "warningField" );
     this.removeStyle( el );
+    if ( this.numWarnings > 0 ) { this.numWarnings--; }
   };
   Valiform.prototype.hasClass = function( el, cls ) {
     var regexp = new RegExp( '(\\s|^)' + cls + '(\\s|$)' ),
@@ -534,7 +553,7 @@ var Valiform = (function(){
         textareaF = this._getArrayFromTag( f, "textarea" ),
         selectF = this._getArrayFromTag( f, "select" ),
         fields = ( typeof textareaF != "undefined" )?inputF.concat( textareaF ):inputF,
-        i = 0, l = fields.length, 
+        i = 0, l = fields.length,
         el, re, ch, typeF,
         myfnblur = function( e ) { _this.fnBlur( e ); },
         myfnSel = function( e ) { _this.fnSel( e ); };
@@ -567,14 +586,15 @@ var Valiform = (function(){
     //TODO: hay que tratar 2 atributos: data-hidden=true y data-activate
     var _this = this,
         toActivate = document.querySelectorAll( "[data-activate]" ),
-        i=0, l=toActivate.length, elAc, 
-        nameAc, elAcs,
+        i=0, l=toActivate.length, elAc,
+        nameAc, elAcs, dataActivateValue,
         j, l2,
         parentEl, parentElId,
         myShowHidden = function( e ){ _this.fnShowHidden( e ); };
     for( ;i<l; i++ ){
       this.addClass( toActivate[i], "isHidden" ); // Todos los elementos que tengan el atributo data-activate deben estar display:none
-      elAc = document.getElementById( toActivate[i].getAttribute( "data-activate" ) );
+      dataActivateValue = toActivate[i].getAttribute( "data-activate" );
+      elAc = document.getElementById( dataActivateValue );
       if ( elAc ) {
         nameAc = elAc.getAttribute( "name" );
         parentEl = this._getParentElement( toActivate[i], "form" );
@@ -603,11 +623,11 @@ var Valiform = (function(){
       } else if ( typeF == "checkbox" ) {
         if ( !target.checked ) {
           this.addWarnMesg( target, this.text.requiredField );
-          return true;  
+          return true;
         } else {
-          this.delWarnMesg( target );  
+          this.delWarnMesg( target );
         }
-      } else if ( val === "" ) {  
+      } else if ( val === "" ) {
         this.addWarnMesg( target, this.text.requiredField );
         return true;
       } else {
@@ -618,7 +638,7 @@ var Valiform = (function(){
       if ( this.validate( val, type ) ) {
         this.delWarnMesg( target );
       } else {
-        this.badValue++;            
+        this.badValue++;
         this.addWarnMesg( target, this.text.wrongValue );
       }
     }
@@ -629,9 +649,9 @@ var Valiform = (function(){
         val = target.value || target.getAttribute( "value" ) || "";
     if ( val === "" ) {
       this.addWarnMesg( target, this.text.requiredField );
-      return true;  
+      return true;
     } else {
-      this.delWarnMesg( target );  
+      this.delWarnMesg( target );
     }
   };
   Valiform.prototype.fnShowHidden = function( e ){
@@ -639,9 +659,9 @@ var Valiform = (function(){
     var target = e.target || e.srcElement,
     toActivateId, toDeactivateId,
     id = target.id || target.getAttribute( "id" ) || "",
-    toActivate = document.querySelectorAll( "[data-activate="+id+"]" ),
-    toDeactivate = document.querySelectorAll( "[data-deactivate="+id+"]" ),
-    i = 0, lA = toActivate.length, lD = toDeactivate.length, 
+    toActivate = document.querySelectorAll( "[data-activate*="+id+"]" ),
+    toDeactivate = document.querySelectorAll( "[data-deactivate*="+id+"]" ),
+    i = 0, lA = toActivate.length, lD = toDeactivate.length,
     inHid, j, l2,
     typEl, parEl, tagEl;
     if ( lA > 0 ) {
@@ -651,10 +671,11 @@ var Valiform = (function(){
         inHid = document.querySelectorAll( "#"+toActivateId+" input[data-hidden=true]" );
         j=0; l2=inHid.length;
         for( ;j<l2; j++ ) {
-          inHid[j].setAttribute( "data-hidden", "true" ); 
+          inHid[j].setAttribute( "data-hidden", "false" );
         }
       }
-    } 
+    }
+    i=0;
     if ( lD > 0 ) {
       for( ;i<lD; i++ ) {
         this.addClass( toDeactivate[i], "isHidden" );
@@ -689,7 +710,7 @@ var Valiform = (function(){
     } else if( window.detachEvent ) {
         el.detachEvent( 'on' + ev, fn );
     } else {
-        elem['on' + ev] = null; 
+        elem['on' + ev] = null;
     }
   };
   Valiform.prototype._triggerEvent = function( el, ev ) {
