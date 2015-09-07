@@ -145,3 +145,11 @@ The fields with *data-activate/data-deactivate* must be a data-type hiddenON and
   <input id="phone" name="phone" data-type="hiddenON" type="text" data-required="true" data-tovalidate="telephone" placeholder="Your telephone number" />
 </fieldset>
 ```
+
+###data-checkrealtime
+
+By default the value is true. 
+When a field lost the focus, this one is checked and a warning message is showed, if the value is not valid, in function to the value of data-tovalidate and data-required.
+If you add the attribute *data-checkrealtime* equal to false it avoids check the form when a field lost the focus.
+The form is checked before the submit action, in that case, if any field is wrong this one will be checked when it lose the focus.
+
