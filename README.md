@@ -3,14 +3,11 @@
 ValidateForm.js is an automatic javascript class to validate HTML form fields using **data-** HTML5 attributes.
 It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
 
-##Example:
+## Example:
 * http://codepen.io/manufosela/pen/PqZdrq (Live Codepen)
 * https://manufosela.es/Automatic-Form-Validation/index.html
 
-##Complex Example:
-http://manufosela.es/lib/valiform/demo2.html
-
-##Simple Use 
+## Simple Use 
 
 * First add in yout HTML
 ```html
@@ -56,7 +53,7 @@ Example:
 ValidateForm.js automatically adds a red asterisk at the end on the tag <label>
 
 
-##data-tovalidate types
+## data-tovalidate types
 ValidateForm.js can validate the next fields type:
 
 * **int** or integer: integer numbers
