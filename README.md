@@ -1,6 +1,7 @@
-# Valiform.js
+# ValidateForm.js
 
-Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
+ValidateForm.js is an automatic javascript class to validate HTML form fields using **data-** HTML5 attributes.
+It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.
 
 ##Example:
 * http://codepen.io/manufosela/pen/PqZdrq (Live Codepen)
@@ -10,29 +11,53 @@ Valiform.js is an automatic javascript library to validate HTML form fields usin
 http://manufosela.es/lib/valiform/demo2.html
 
 ##Simple Use 
-First add in yout HTML
-```javascript
-<script type="text/javascript" src="valiform.min.js"></script>
-```
-Second add data-validate="true" to form tag
 
-And third add *data-* attributes to form fields:
+* First add in yout HTML
 ```html
-data-required="true" to mandatory fields
-data-tovalidate="XXXX" to check the value with XXXX type
+<script type="module" src="ValidateForm.min.js"></script>
 ```
-For example:
+or 
 
+```html
+  <script>
+    import { ValidateForm } from './ValidateForm.min.js';
+  </script>
+```
+
+* Second, create object validateForm:
+
+```html
+  <script>
+    window.onload = function() {
+      const validateForm = new ValidateForm();
+    }
+  </script>
+```
+
+* Third add data-validate="true", and optionaly data-checkrealtime="true", to <form> tag:
+
+```html
+  <form id="myForm" data-validate="true" data-checkrealtime="true">
+    <!-- [...] -->
+  </form>
+```
+
+* Four add *data-* attributes to form fields:
+
+  * data-required="true" to mandatory fields
+  * data-tovalidate="XXXX" to check the value with XXXX type
+
+Example:
 ```html
   <form id="myForm" data-validate="true">
     <input type="text" placeholder="type something.." data-required="true" data-tovalidate="alpha" />
-     [...]
+     
 ```
-valiform.js automatically adds a red asterisk at the end on the tag <label>
+ValidateForm.js automatically adds a red asterisk at the end on the tag <label>
 
 
 ##data-tovalidate types
-Valiform.js can validate the next fields type:
+ValidateForm.js can validate the next fields type:
 
 * **int** or integer: integer numbers
 * **float**: float numbers, numbers and .
@@ -55,9 +80,7 @@ Valiform.js can validate the next fields type:
 * **fecha** or **date**: Date
 * **noempty**: any value
 
-##Code Example:
-
-###HTML:
+## Complete Example:
 
 ```html
 <form id="myForm" data-validate="true">
@@ -84,24 +107,19 @@ Valiform.js can validate the next fields type:
   <div class="links">
     <button id="submitBtn" type="submit" class="btn btn-default" data-checkform="true">Submit</button>
   </div>
-
 </form>
+
+<script type="module">
+  import { ValidateForm } from './ValidateForm.min.js';
+  window.onload = function() {
+    const validateForm = new ValidateForm();
+  }
+</script>
 ```
 
-###javascript
-```javascript
-  var val = new Valiform();
+## Complex uses
 
-  document.getElementById("myForm").addEventListener("submit", function(evt) {
-    // For example my Ajax Code to send form
-    alert( "FORM CORRECT. SENDING FORM...");
-    return false;
-  });
-```
-
-##Complex uses
-
-###data-name attribute
+### data-name attribute
 
 Add a *data-name* attribute to form fields extra label near of radio or checkbox fields, to show error message when these fields are wrong.
 *data-name* atribute has the value of the name of a radio o checkbox field marked to be checked.
@@ -121,7 +139,7 @@ When the named field has a wrong value it is marked instead of the radio or chec
 </div>
 ```
 
-###data-activate / data-deactivate and data-type=hiddenON
+### data-activate / data-deactivate and data-type=hiddenON
 
 Add a *data-activate* and *data-deactivate* attributes to form fields to show fields when a value is select in referered data- value.
 
@@ -146,7 +164,7 @@ The fields with *data-activate/data-deactivate* must be a data-type hiddenON and
 </fieldset>
 ```
 
-###data-checkrealtime
+### data-checkrealtime
 
 By default the value is true. 
 When a field lost the focus, this one is checked and a warning message is showed, if the value is not valid, in function to the value of data-tovalidate and data-required.
