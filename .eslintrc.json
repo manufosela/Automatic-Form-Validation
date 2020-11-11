@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb",
+  "env": {
+      "browser": true,
+      "node": true
+  },
+  "rules": {
+      "import/prefer-default-export": "off",
+      "no-underscore-dangle": "off"
+  },
+  "globals": {
+      "ENVIRONMENT": "readonly",
+      "describe": "readonly",
+      "it": "readonly"
+  }
+}

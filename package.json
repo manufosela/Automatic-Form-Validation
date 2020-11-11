@@ -1,0 +1,37 @@
+{
+  "name": "automatic_form_validation",
+  "version": "1.0.0",
+  "description": "Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.",
+  "main": "valiform.js",
+  "scripts": {
+    "build": "rm -rf build && mkdir build && rollup -c",
+    "start": "es-dev-server --app-index /demo.html --node-resolve --watch --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manufosela/Automatic-Form-Validation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manufosela/Automatic-Form-Validation/issues"
+  },
+  "homepage": "https://github.com/manufosela/Automatic-Form-Validation#readme",
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.2.3",
+    "@babel/plugin-proposal-decorators": "^7.2.3",
+    "es-dev-server": "^1.46.0",
+    "rollup": "^1.1.0",
+    "rollup-plugin-babel": "^4.3.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-terser": "^5.1.3"
+  }
+}
