@@ -7,9 +7,6 @@ It has little more than 12Kb. Without dependencies, like jQuery, but compatible 
 * http://codepen.io/manufosela/pen/PqZdrq (Live Codepen)
 * https://manufosela.es/Automatic-Form-Validation/index.html
 
-## Complex Example:
-http://manufosela.es/lib/valiform/demo2.html
-
 ## Simple Use 
 
 * First add in yout HTML
