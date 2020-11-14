@@ -93,7 +93,7 @@ export class ValidateForm {
     this.okFieldsNoEmpty = this.noEmptyFields();
     this.okFieldsValidated = this.validateFields();
     if (this.okFieldsValidated && this.okFieldsNoEmpty) {
-      this.submitCallback();
+      this.submitCallback(e);
     }
     return false;
   }
@@ -102,6 +102,7 @@ export class ValidateForm {
     this._null = null;
     const { target } = e;
     target.formParam.submit();
+    return false;
   }
 
   validate(val, type) {
@@ -116,8 +117,8 @@ export class ValidateForm {
     if (typeof formElement === 'undefined') { return false; }
     const html = (typeof _html !== 'undefined') ? _html : '*';
     const formId = formElement.getAttribute('id');
-    const aEl = [...document.querySelectorAll(`#${formId} [data-required=true]`)];
-    aEl.forEach((el) => {
+    const requiredElements = [...document.querySelectorAll(`#${formId} [data-required=true]`)];
+    requiredElements.forEach((el) => {
       const typ = el.getAttribute('type') || el.type;
       if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true') {
         const idAst = el.getAttribute('name');
@@ -130,7 +131,11 @@ export class ValidateForm {
             document.getElementById(`label_${idAst}`).appendChild(asterisco);
           } else {
             const sb = el.parentElement.querySelectorAll('label');
-            if (sb.length > 0) { sb[0].appendChild(asterisco); }
+            if (sb.length > 0) {
+              sb[0].appendChild(asterisco);
+            } else {
+              el.parentNode.appendChild(asterisco);
+            }
           }
         }
       }
@@ -140,8 +145,8 @@ export class ValidateForm {
 
   validateFields() {
     this.badValue = 0;
-    const aEl = [...document.querySelectorAll('[data-tovalidate]')];
-    aEl.forEach((el) => {
+    const requiredElements = [...document.querySelectorAll('[data-tovalidate]')];
+    requiredElements.forEach((el) => {
       const val = el.value || '';
       const type = el.dataset.tovalidate || '';
       if (!this.validate(val, type)) {
@@ -154,10 +159,10 @@ export class ValidateForm {
 
   noEmptyFields() {
     let empty = 0;
-    const aEl = [...document.querySelectorAll('[data-required=true]')];
-    aEl.forEach((el) => {
+    const requiredElements = [...document.querySelectorAll('[data-required=true]')];
+    requiredElements.forEach((el) => {
       const typ = el.getAttribute('type') || el.type;
-      if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true') {
+      if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true' && el.getAttribute('data-type') !== 'hiddenON') {
         const val = el.value || '';
         const typeF = el.getAttribute('type') || el.type || '';
         if (typeF === 'radio') {
