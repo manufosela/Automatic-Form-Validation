@@ -1,17 +1,20 @@
 {
   "name": "automatic_form_validation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.",
   "main": "ValidateForm.js",
   "scripts": {
     "build": "rm -rf build && mkdir build && rollup -c",
-    "start": "es-dev-server --app-index /demo.html --node-resolve --watch --open"
+    "start": "es-dev-server --app-index /demo/index.html --node-resolve --watch --open"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/manufosela/Automatic-Form-Validation.git"
   },
-  "keywords": ["forms", "validate"],
+  "keywords": [
+    "forms",
+    "validate"
+  ],
   "author": "@manufosela",
   "license": "Apache-2.0",
   "bugs": {
