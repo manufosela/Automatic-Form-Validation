@@ -64,15 +64,15 @@
 
     <script type="module">
       import { ValidateForm } from '../ValidateForm.js';
+
+      function submitFunction() {
+        alert( "CALLBACK TO SEND FORM..." );
+        return false;
+      }
+
       window.onload = function() {
         /** THIS LINE VALIDATE ALL THE FORMS **/
-        const validateForm = new ValidateForm();
-        
-        const form = document.getElementById("myForm");
-        form.addEventListener("submit", function(){
-          alert( "CALLBACK TO SEND FORM..." );
-          return false;
-        });
+        const validateForm = new ValidateForm(submitFunction);
       }
     </script>
   </body>
