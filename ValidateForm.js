@@ -174,6 +174,21 @@ export class ValidateForm {
           } else {
             this.delWarnMesg(el);
           }
+        } else if (el.dataset.type === 'checkbox-group') {
+          const checkboxes = [...el.parentNode.querySelectorAll('input[type="checkbox"]')];
+          const maxChecked = el.dataset.max || checkboxes.length;
+          const minChecked = el.dataset.min || 1;
+          let counterChecked = 0;
+          checkboxes.forEach((checkbox) => {
+            counterChecked += (checkbox.checked) ? 1 : 0;
+          });
+          if (counterChecked > maxChecked || counterChecked < minChecked) {
+            empty += 1;
+            const errorMsg = el.dataset.errorMsg || 'El número de checkbox marcado es incorrecto';
+            this.addWarnMesg(el, errorMsg);
+          } else {
+            this.delWarnMesg(el);
+          }
         } else if (val === '') {
           this.addWarnMesg(el, this.texts.requiredField);
           empty += 1;
