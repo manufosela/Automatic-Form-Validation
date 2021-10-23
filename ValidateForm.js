@@ -108,6 +108,12 @@ export class ValidateForm {
   validate(val, type) {
     if (val === '' || val === null || (val !== '' && type === 'noempty')) { return true; }
     if (type === 'selected' || type === 'noempty') { return (val !== ''); }
+    if (type.substr(0, 3) === 'fn:') {
+      const fn = window[type.substr(3)];
+      if (typeof fn === 'function') {
+        return fn(val);
+      }
+    }
     return (this.validationTypeFunctions[type]) ? this.validationTypeFunctions[type](val) : false;
   }
 
