@@ -261,3 +261,5 @@ By default the value is true.
 When a field lost the focus, this one is checked and a warning message is showed, if the value is not valid, in function to the value of data-tovalidate and data-required.
 If you add the attribute _data-checkrealtime_ equal to false it avoids check the form when a field lost the focus.
 The form is checked before the submit action, in that case, if any field is wrong this one will be checked when it lose the focus.
+All fields/group fields need a label tag with correct for attribute to work correctly.
+If the object from Validateform is created before to render de form, you can call `validateForm._checkFieldsToValidate();` to add validate functionality after
