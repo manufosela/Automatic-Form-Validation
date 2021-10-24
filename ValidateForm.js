@@ -64,7 +64,7 @@ export class ValidateForm {
       date: VerifyUtils.isDate,
     };
 
-    this._checkFieldsToValidate();
+    this.checkFieldsToValidate();
 
     if (document.getElementById('valiformStyles') === null) {
       const style = document.createElement('style');
@@ -85,7 +85,7 @@ export class ValidateForm {
     });
   }
 
-  _checkFieldsToValidate() {
+  checkFieldsToValidate() {
     this.formsToValidate.forEach((formToValidate) => {
       this.markRequiredFields(formToValidate);
       if (formToValidate.dataset.checkrealtime === 'true') {
@@ -116,7 +116,7 @@ export class ValidateForm {
 
   activateValidation() {
     this.formsToValidate = [...document.querySelectorAll('form[data-validate=true]')];
-    this._checkFieldsToValidate();
+    this.checkFieldsToValidate();
   }
 
   validate(val, type) {
