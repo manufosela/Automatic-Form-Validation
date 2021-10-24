@@ -9,7 +9,8 @@ export class ValidateForm {
     this.asteriskStyle = confOpt.asteriskStyle || `color: ${this.warningColor}!important; font-size: 15px!important; padding-left:3px;`;
     this.cssTextWarning = confOpt.cssTextWarning || `color:${this.warningColor}!important; margin:0;`;
     this.cssElementWarning = confOpt.cssElementWarning || `border:2px solid ${this.warningColor}!important;`;
-    this.requiredContent = confOpt.requiredTextContent || '*';
+    this.requiredTextContent = confOpt.requiredTextContent || '*';
+    this.scope = confOpt.scope || document;
 
     this.numWarnings = 0;
     this.texts = {
@@ -17,9 +18,8 @@ export class ValidateForm {
       wrongValue: 'valor incorrecto',
     };
 
-    this.form = document.querySelector('form[data-validate=true]');
     this.badValue = 0;
-    this.formsToValidate = [...document.querySelectorAll('form[data-validate=true]')];
+    this.formsToValidate = [...this.scope.querySelectorAll('form[data-validate=true]')];
     this.submitElementsToCheck = null;
     this.okFieldsNoEmpty = false;
     this.okFieldsValidated = false;
@@ -66,7 +66,7 @@ export class ValidateForm {
 
     this.checkFieldsToValidate();
 
-    if (document.getElementById('valiformStyles') === null) {
+    if (this.scope.querySelector('#valiformStyles') === null) {
       const style = document.createElement('style');
       style.setAttribute('id', 'valiformStyles');
       style.setAttribute('type', 'text/css');
@@ -77,7 +77,7 @@ export class ValidateForm {
 
   _checkSubmitElements(formToValidate) {
     const elementId = formToValidate.getAttribute('id');
-    const submitElementsToCheck = document.querySelectorAll(`#${elementId} [type=submit][data-checkform=true]`);
+    const submitElementsToCheck = this.scope.querySelectorAll(`#${elementId} [type=submit][data-checkform=true]`);
     submitElementsToCheck.forEach((submitElementToCheck) => {
       const submitBtn = submitElementToCheck;
       submitBtn.formParam = formToValidate;
@@ -115,7 +115,7 @@ export class ValidateForm {
   }
 
   activateValidation() {
-    this.formsToValidate = [...document.querySelectorAll('form[data-validate=true]')];
+    this.formsToValidate = [...this.scope.querySelectorAll('form[data-validate=true]')];
     this.checkFieldsToValidate();
   }
 
@@ -133,13 +133,13 @@ export class ValidateForm {
 
   _drawAsterisk(el) {
     const idAst = el.getAttribute('name');
-    if (document.getElementById(`asterisco_${idAst}`) === null) {
+    if (this.scope.querySelector(`#asterisco_${idAst}`) === null) {
       const asterisco = document.createElement('span');
       asterisco.setAttribute('id', `asterisco_${idAst}`);
       asterisco.setAttribute('style', this.asteriskStyle);
-      asterisco.innerHTML = this.requiredContent;
-      if (document.getElementById(`label_${idAst}`) !== null) {
-        document.getElementById(`label_${idAst}`).appendChild(asterisco);
+      asterisco.innerHTML = this.requiredTextContent;
+      if (this.scope.querySelector(`#label_${idAst}`) !== null) {
+        this.scope.querySelector(`#label_${idAst}`).appendChild(asterisco);
       } else {
         const sb = el.parentElement.querySelectorAll('label');
         if (sb.length > 0) {
@@ -156,7 +156,7 @@ export class ValidateForm {
   markRequiredFields(formElement) {
     if (typeof formElement !== 'undefined') {
       const formElementId = formElement.getAttribute('id');
-      const requiredElements = [...document.querySelectorAll(`#${formElementId} [data-required=true]`)];
+      const requiredElements = [...this.scope.querySelectorAll(`#${formElementId} [data-required=true]`)];
       requiredElements.forEach((el) => {
         const typ = el.getAttribute('type') || el.type;
         if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true') {
@@ -168,7 +168,7 @@ export class ValidateForm {
 
   validateFields() {
     this.badValue = 0;
-    const requiredElements = [...document.querySelectorAll('[data-tovalidate]')];
+    const requiredElements = [...this.scope.querySelectorAll('[data-tovalidate]')];
     requiredElements.forEach((el) => {
       const val = el.value || '';
       const type = el.dataset.tovalidate || '';
@@ -182,7 +182,7 @@ export class ValidateForm {
 
   noEmptyFields() {
     let empty = 0;
-    const requiredElements = [...document.querySelectorAll('[data-required=true]')];
+    const requiredElements = [...this.scope.querySelectorAll('[data-required=true]')];
     requiredElements.forEach((el) => {
       const typ = el.getAttribute('type') || el.type;
       if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true' && el.getAttribute('data-type') !== 'hiddenON') {
@@ -229,8 +229,8 @@ export class ValidateForm {
     const nameF = el.getAttribute('name');
     const formE = this._getParentElement(el, 'form');
     const idFormE = formE.getAttribute('id');
-    const pEl = document.querySelector(`[data-name=${nameF}]`) || el;
-    const radF = [...document.querySelectorAll(`#${idFormE} [name=${nameF}]`)];
+    const pEl = this.scope.querySelector(`[data-name=${nameF}]`) || el;
+    const radF = [...this.scope.querySelectorAll(`#${idFormE} [name=${nameF}]`)];
     radF.forEach((radFEl) => {
       if (radFEl.checked) { atLeastOne += 1; }
     });
@@ -249,12 +249,12 @@ export class ValidateForm {
     const target = (typeof el.getAttribute !== 'undefined') ? el : window.event.target;
     const name = target.getAttribute('name') || target.getAttribute('id') || '';
     const id = `warning-${name}`;
-    if (!document.getElementById(id)) {
-      el = document.getElementById(target.getAttribute('id') || el.id);
+    if (!this.scope.querySelector(`#${id}`)) {
+      el = this.scope.querySelector(`#${target.getAttribute('id')}` || el.id);
       warning = document.createElement('p');
       warning.setAttribute('id', id);
     } else {
-      warning = document.getElementById(id);
+      warning = this.scope.querySelector(`#${id}`);
     }
     warning.setAttribute('style', this.cssTextWarning);
     warning.innerHTML = msg;
@@ -271,8 +271,8 @@ export class ValidateForm {
   delWarnMesg(el) {
     const target = (typeof el.getAttribute !== 'undefined') ? el : window.event.target;
     const name = target.getAttribute('name') || target.getAttribute('id') || '';
-    if (document.getElementById(`warning-${name}`)) {
-      target.parentElement.removeChild(document.getElementById(`warning-${name}`));
+    if (this.scope.querySelector(`#warning-${name}`)) {
+      target.parentElement.removeChild(this.scope.querySelector(`#warning-${name}`));
     }
     this.removeStyle(el);
     if (this.numWarnings > 0) { this.numWarnings -= 1; }
@@ -288,7 +288,7 @@ export class ValidateForm {
     const fields = [...form.getElementsByTagName('input'), ...form.getElementsByTagName('textarea')];
     const selectF = [...form.getElementsByTagName('select')];
     fields.forEach((field) => {
-      const el = document.getElementById(field.getAttribute('id'));
+      const el = this.scope.querySelector(`#${field.getAttribute('id')}`);
       const validateIsRequired = el.getAttribute('data-required');
       const validateType = el.getAttribute('data-tovalidate');
       const typeF = el.getAttribute('type') || el.type || '';
@@ -302,7 +302,7 @@ export class ValidateForm {
       }
     });
     selectF.forEach((select) => {
-      const el = document.getElementById(select.getAttribute('id'));
+      const el = this.scope.querySelector(`#${select.getAttribute('id')}`);
       const validateIsRequired = el.getAttribute('data-required');
       if (validateIsRequired === 'true') {
         el.addEventListener('click', this._onSel.bind(this), false);
@@ -313,16 +313,16 @@ export class ValidateForm {
   }
 
   _hiddenFieldsActions() {
-    const toActivate = [...document.querySelectorAll('[data-activate]')];
+    const toActivate = [...this.scope.querySelectorAll('[data-activate]')];
     toActivate.forEach((elToActivate) => {
       elToActivate.classList.add('isHidden'); // Todos los elementos que tengan el atributo data-activate deben estar display:none
       const dataActivateValue = elToActivate.getAttribute('data-activate');
-      const elAc = document.getElementById(dataActivateValue);
+      const elAc = this.scope.querySelector(`#${dataActivateValue}`);
       if (elAc) {
         const nameAc = elAc.getAttribute('name');
         const parentEl = this._getParentElement(elToActivate, 'form');
         const parentElId = parentEl.getAttribute('id');
-        const elAcs = [...document.querySelectorAll(`#${parentElId} [name=${nameAc}]`)];
+        const elAcs = [...this.scope.querySelectorAll(`#${parentElId} [name=${nameAc}]`)];
         elAcs.forEach((elAcEl) => {
           elAcEl.addEventListener('blur', this._showHidden.bind(this), false);
           elAcEl.addEventListener('click', this._showHidden.bind(this), false);
@@ -379,25 +379,23 @@ export class ValidateForm {
   _showHidden(e) {
     this._null = null;
     const { target } = e;
-    let toActivateId;
-    let toDeactivateId;
     const id = target.getAttribute('id') || '';
-    const toActivate = [...document.querySelectorAll(`[data-activate*=${id}]`)];
-    const toDeactivate = [...document.querySelectorAll(`[data-deactivate*=${id}]`)];
+    const toActivate = [...this.scope.querySelectorAll(`[data-activate*=${id}]`)];
+    const toDeactivate = [...this.scope.querySelectorAll(`[data-deactivate*=${id}]`)];
     toActivate.forEach((toActivateEl) => {
+      const inHid = toActivateEl.querySelectorAll('input[data-type="hiddenON"]');
       toActivateEl.classList.remove('isHidden');
-      toActivateId = toActivateEl.getAttribute('id');
-      const inHid = document.querySelectorAll(`#${toActivateId} input[data-hidden=true]`);
       inHid.forEach((inHidEl) => {
-        inHidEl.setAttribute('data-hidden', 'false');
+        const el = inHidEl;
+        el.dataset.type = 'hiddenOFF';
       });
     });
     toDeactivate.forEach((toDeactivateEl) => {
+      const inHid = toDeactivateEl.querySelectorAll('input[data-type="hiddenOFF]');
       toDeactivateEl.classList.add('isHidden');
-      toDeactivateId = toDeactivateEl.getAttribute('id');
-      const inHid = document.querySelectorAll(`#${toDeactivateId} input[data-hidden=false]`);
       inHid.forEach((inHidEl) => {
-        inHidEl.setAttribute('data-hidden', 'true');
+        const el = inHidEl;
+        el.dataset.type = 'hiddenON';
         const typEl = inHidEl.getAttribute('type') || inHidEl.type;
         const parEl = inHidEl.parentElement;
         const tagEl = parEl.tagName.toUpperCase() || '';
