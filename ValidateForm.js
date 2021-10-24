@@ -1,4 +1,4 @@
-/* ValidateForm.js by @manufosela - 2015 - 2020 */
+/* ValidateForm.js by @manufosela - 2015 - 2021 */
 import { VerifyUtils } from './VerifyUtils.js';
 
 export class ValidateForm {
@@ -9,6 +9,7 @@ export class ValidateForm {
     this.asteriskStyle = confOpt.asteriskStyle || `color: ${this.warningColor}!important; font-size: 15px!important; padding-left:3px;`;
     this.cssTextWarning = confOpt.cssTextWarning || `color:${this.warningColor}!important; margin:0;`;
     this.cssElementWarning = confOpt.cssElementWarning || `border:2px solid ${this.warningColor}!important;`;
+    this.requiredContent = confOpt.requiredTextContent || '*';
 
     this.numWarnings = 0;
     this.texts = {
@@ -16,12 +17,12 @@ export class ValidateForm {
       wrongValue: 'valor incorrecto',
     };
 
+    this.form = document.querySelector('form[data-validate=true]');
     this.badValue = 0;
-    this.fieldsToValidate = [...document.querySelectorAll('form[data-validate=true]')];
+    this.formsToValidate = [...document.querySelectorAll('form[data-validate=true]')];
     this.submitElementsToCheck = null;
     this.okFieldsNoEmpty = false;
     this.okFieldsValidated = false;
-    this.formId = null;
 
     this.validationTypeFunctions = {
       int: VerifyUtils.isInt,
@@ -63,20 +64,7 @@ export class ValidateForm {
       date: VerifyUtils.isDate,
     };
 
-    this.fieldsToValidate.forEach((fieldToValidate) => {
-      this.markRequiredFields(fieldToValidate);
-      if (fieldToValidate.dataset.checkrealtime === 'true') {
-        this.addEventsToCheckFieldsWhenBlur(fieldToValidate);
-      }
-      this.hiddenFieldsActions(fieldToValidate);
-      const formId = fieldToValidate.getAttribute('id');
-      const submitElementsToCheck = document.querySelectorAll(`#${formId} [type=submit][data-checkform=true]`);
-      submitElementsToCheck.forEach((submitElementToCheck) => {
-        const submitBtn = submitElementToCheck;
-        submitBtn.formParam = fieldToValidate;
-        submitBtn.addEventListener('click', this._beforeSubmit.bind(this), false);
-      });
-    });
+    this._checkFieldsToValidate();
 
     if (document.getElementById('valiformStyles') === null) {
       const style = document.createElement('style');
@@ -85,6 +73,27 @@ export class ValidateForm {
       style.innerHTML = '.isHidden{ display:none; }';
       document.getElementsByTagName('head')[0].appendChild(style);
     }
+  }
+
+  _checkSubmitElements(formToValidate) {
+    const elementId = formToValidate.getAttribute('id');
+    const submitElementsToCheck = document.querySelectorAll(`#${elementId} [type=submit][data-checkform=true]`);
+    submitElementsToCheck.forEach((submitElementToCheck) => {
+      const submitBtn = submitElementToCheck;
+      submitBtn.formParam = formToValidate;
+      submitBtn.addEventListener('click', this._beforeSubmit.bind(this), false);
+    });
+  }
+
+  _checkFieldsToValidate() {
+    this.formsToValidate.forEach((formToValidate) => {
+      this.markRequiredFields(formToValidate);
+      if (formToValidate.dataset.checkrealtime === 'true') {
+        this.addEventsToCheckFieldsWhenBlur(formToValidate);
+      }
+      this._hiddenFieldsActions(formToValidate);
+      this._checkSubmitElements(formToValidate);
+    });
   }
 
   _beforeSubmit(e) {
@@ -105,6 +114,11 @@ export class ValidateForm {
     return false;
   }
 
+  activateValidation() {
+    this.formsToValidate = [...document.querySelectorAll('form[data-validate=true]')];
+    this._checkFieldsToValidate();
+  }
+
   validate(val, type) {
     if (val === '' || val === null || (val !== '' && type === 'noempty')) { return true; }
     if (type === 'selected' || type === 'noempty') { return (val !== ''); }
@@ -117,36 +131,39 @@ export class ValidateForm {
     return (this.validationTypeFunctions[type]) ? this.validationTypeFunctions[type](val) : false;
   }
 
-  // Put a span with a * in form fields with attribute data-required=true
-  // Is mandatory to have a label tag to append span tag into the label tag
-  markRequiredFields(formElement, _html) {
-    if (typeof formElement === 'undefined') { return false; }
-    const html = (typeof _html !== 'undefined') ? _html : '*';
-    const formId = formElement.getAttribute('id');
-    const requiredElements = [...document.querySelectorAll(`#${formId} [data-required=true]`)];
-    requiredElements.forEach((el) => {
-      const typ = el.getAttribute('type') || el.type;
-      if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true') {
-        const idAst = el.getAttribute('name');
-        if (document.getElementById(`asterisco_${idAst}`) === null) {
-          const asterisco = document.createElement('span');
-          asterisco.setAttribute('id', `asterisco_${idAst}`);
-          asterisco.setAttribute('style', this.asteriskStyle);
-          asterisco.innerHTML = html;
-          if (document.getElementById(`label_${idAst}`) !== null) {
-            document.getElementById(`label_${idAst}`).appendChild(asterisco);
-          } else {
-            const sb = el.parentElement.querySelectorAll('label');
-            if (sb.length > 0) {
-              sb[0].appendChild(asterisco);
-            } else {
-              el.parentNode.appendChild(asterisco);
-            }
-          }
+  _drawAsterisk(el) {
+    const idAst = el.getAttribute('name');
+    if (document.getElementById(`asterisco_${idAst}`) === null) {
+      const asterisco = document.createElement('span');
+      asterisco.setAttribute('id', `asterisco_${idAst}`);
+      asterisco.setAttribute('style', this.asteriskStyle);
+      asterisco.innerHTML = this.requiredContent;
+      if (document.getElementById(`label_${idAst}`) !== null) {
+        document.getElementById(`label_${idAst}`).appendChild(asterisco);
+      } else {
+        const sb = el.parentElement.querySelectorAll('label');
+        if (sb.length > 0) {
+          sb[0].appendChild(asterisco);
+        } else {
+          el.parentNode.appendChild(asterisco);
         }
       }
-    });
-    return html;
+    }
+  }
+
+  // Put a span with a * in form fields with attribute data-required=true
+  // Is mandatory to have a label tag to append span tag into the label tag
+  markRequiredFields(formElement) {
+    if (typeof formElement !== 'undefined') {
+      const formElementId = formElement.getAttribute('id');
+      const requiredElements = [...document.querySelectorAll(`#${formElementId} [data-required=true]`)];
+      requiredElements.forEach((el) => {
+        const typ = el.getAttribute('type') || el.type;
+        if (typ !== 'hidden' && el.getAttribute('data-hidden') !== 'true') {
+          this._drawAsterisk(el);
+        }
+      });
+    }
   }
 
   validateFields() {
@@ -280,7 +297,7 @@ export class ValidateForm {
         el.addEventListener('blur', this._onBlur.bind(this), false);
         if (typeF === 'checkbox' || typeF === 'radio') {
           el.removeEventListener('click', this._onBlur.bind(this), false);
-          el.addEventListener('click', this.onBlur, false);
+          el.addEventListener('click', this._onBlur.bind(this), false);
         }
       }
     });
@@ -295,7 +312,7 @@ export class ValidateForm {
     });
   }
 
-  hiddenFieldsActions() {
+  _hiddenFieldsActions() {
     const toActivate = [...document.querySelectorAll('[data-activate]')];
     toActivate.forEach((elToActivate) => {
       elToActivate.classList.add('isHidden'); // Todos los elementos que tengan el atributo data-activate deben estar display:none
