@@ -263,3 +263,4 @@ If you add the attribute _data-checkrealtime_ equal to false it avoids check the
 The form is checked before the submit action, in that case, if any field is wrong this one will be checked when it lose the focus.
 All fields/group fields need a label tag with correct for attribute to work correctly.
 If the object from Validateform is created before to render de form, you can call `validateForm.checkFieldsToValidate();` to add validate functionality after
+To use into a web-component you must define the _scope_ like webComponentName.shadowRoot.
