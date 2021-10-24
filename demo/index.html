@@ -256,6 +256,25 @@
       window.onload = function () {
         /** THIS LINE VALIDATE ALL THE FORMS **/
         const validateForm = new ValidateForm(submitFunction);
+
+        const addNewField = () => {
+          const label = document.createElement("label");
+          label.innerHTML = "This is a Alpha field added after 1 second: ";
+          label.setAttribute("for", "tardio");
+          const input = document.createElement("input");
+          input.setAttribute("type", "text");
+          input.setAttribute("name", "tardio");
+          input.setAttribute("id", "tardio");
+          input.setAttribute("data-required", "true");
+          input.setAttribute("data-tovalidate", "alpha");
+          input.classList.add("form-control");
+          const div = document.createElement("div");
+          div.setAttribute("class", "form-group");
+          div.appendChild(label);
+          div.appendChild(input);
+          document.getElementById("myForm").appendChild(div);
+          validateForm._checkFieldsToValidate();
+        };
       };
     </script>
   </body>
