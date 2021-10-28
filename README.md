@@ -87,7 +87,78 @@ ValidateForm.js can validate the next fields type:
 - **fecha** or **date**: Date
 - **noempty**: any value
 
-You can use customize functions using fn:myFunction. You must define myFunction into a script tag previously.
+You can use customize functions using _fn:myFunction_. You must define myFunction into a script tag previously.
+
+## Attribute data-type
+
+Use _data-type="checkbox-group"_ into a <label> tag to validate a group of checkboxes.
+Use with _data-min="2"_ and _data-max="3"_ to validate a group of checkboxes with max and min.
+Use _data-error-msg="XXXX"_ to define a custom error message.
+
+#### Example:
+
+```html
+
+```
+
+## Atributte data-name
+
+Use _data-name="XXXX"_ into a <label> tag to show and hide a group of radio buttons.
+Use two radio-buttons with id with the same label name adding YES and NO to the end of the label name and with attribute _data-type="hiddenON"_ every radio-button.
+
+#### Example:
+
+```html
+<div class="form-group">
+  <label id="label_hasphone" data-name="hasphone"
+    >Do you have a phone number?</label
+  >
+  <label for="hasphoneNO">
+    <input
+      id="hasphoneNO"
+      name="hasphone"
+      type="radio"
+      data-required="true"
+      value="nophone"
+    />
+    No
+  </label>
+  <label for="hasphoneYES">
+    <input
+      id="hasphoneYES"
+      name="hasphone"
+      type="radio"
+      data-required="true"
+      value="yesphone"
+    />
+    Yes
+  </label>
+  <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
+    <label for="phone">Phone number</label>
+    <input
+      id="phone"
+      name="phone"
+      data-type="hiddenON"
+      type="text"
+      data-required="true"
+      data-tovalidate="telephone"
+      placeholder="Your telephone number"
+    />
+  </fieldset>
+  <fieldset data-activate="hasphoneYES" data-deactivate="hasphoneNO">
+    <label for="allowcall">
+      <input
+        id="allowcall"
+        name="allowcall"
+        data-type="hiddenON"
+        type="checkbox"
+        value="ok"
+      />
+      Let me call by phone
+    </label>
+  </fieldset>
+</div>
+```
 
 ## Complete Example:
 
