@@ -289,8 +289,8 @@ export class ValidateForm {
     const selectF = [...form.getElementsByTagName('select')];
     fields.forEach((field) => {
       const el = this.scope.querySelector(`#${field.getAttribute('id')}`);
-      const validateIsRequired = el.getAttribute('data-required');
-      const validateType = el.getAttribute('data-tovalidate');
+      const validateIsRequired = el.dataset.required || false;
+      const validateType = el.dataset.tovalidate || false;
       const typeF = el.getAttribute('type') || el.type || '';
       if (validateIsRequired === 'true' || validateType !== '') {
         el.removeEventListener('blur', this._onBlur.bind(this), false);
