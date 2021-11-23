@@ -122,6 +122,11 @@ export class VerifyUtils {
     return true;
   }
 
+  static isFile(fileName, validExtensions) {
+    const extension = validExtensions.filter((ext) => fileName.endsWith(ext));
+    return extension.length > 0;
+  }
+
   static checkNumMovil(val) {
     const patron = /^(\+?[0-9]{2}|00[0-9]{2}|[0-9]{2})?[ -]*(6|7)[0-9]{8}$/;
     const regExp = new RegExp(patron);
