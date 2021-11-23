@@ -62,6 +62,7 @@ export class ValidateForm {
       nie: VerifyUtils.valida_nif_cif_nie,
       fecha: VerifyUtils.isDate,
       date: VerifyUtils.isDate,
+      file: VerifyUtils.isFile,
     };
 
     this.checkFieldsToValidate();
@@ -85,6 +86,18 @@ export class ValidateForm {
     });
   }
 
+  _checkDataInfo(formToValidate) {
+    const elementId = formToValidate.getAttribute('id');
+    const dataInfo = this.scope.querySelectorAll(`#${elementId} [data-info]`);
+    dataInfo.forEach((dataInfoElement) => {
+      const dataInfoElementId = dataInfoElement.getAttribute('id');
+      const labelElement = this.scope.querySelector(`#${elementId} [for=${dataInfoElementId}]`);
+      if (labelElement !== null) {
+        labelElement.setAttribute('title', dataInfoElement.dataset.info);
+      }
+    });
+  }
+
   checkFieldsToValidate() {
     this.formsToValidate.forEach((formToValidate) => {
       this.markRequiredFields(formToValidate);
@@ -93,6 +106,7 @@ export class ValidateForm {
       }
       this._hiddenFieldsActions(formToValidate);
       this._checkSubmitElements(formToValidate);
+      this._checkDataInfo(formToValidate);
     });
   }
 
@@ -127,6 +141,10 @@ export class ValidateForm {
       if (typeof fn === 'function') {
         return fn(val);
       }
+    }
+    if (type.substr(0, 5) === 'file:') {
+      const validExtensions = type.substr(5).split(',');
+      return this.validationTypeFunctions.file(val, validExtensions);
     }
     return (this.validationTypeFunctions[type]) ? this.validationTypeFunctions[type](val) : false;
   }
