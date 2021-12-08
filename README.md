@@ -34,13 +34,48 @@ or
 </script>
 ```
 
-- Third add data-validate="true", and optionaly data-checkrealtime="true", to <form> tag:
+Or you can use your own submit Callback:
 
 ```html
-<form id="myForm" data-validate="true" data-checkrealtime="true">
-  <!-- [...] -->
-</form>
+<script>
+  function mySubmitCallback() {
+    // do something before submit and/or return false to prevent submit
+  }
+  window.onload = function () {
+    const validateForm = new ValidateForm(mySubmitCallback);
+  };
+</script>
 ```
+
+Or you can use config options:
+
+````html
+<script>
+  function mySubmitCallback() {
+    // do something before submit and/or return false to prevent submit
+  }
+
+  const confOpt = {};
+  confOpt.warningColor = "#FF0";
+  confOpt.asteriskStyle = "color: #F00; font-size: 15px; padding-left:3px;";
+  confOpt.cssTextWarning = "color:#0F0; margin:10px;";
+  confOpt.cssElementWarning = "border:1px solid #FF0;";
+  confOpt.requiredTextContent = "O"; // instead of '*'
+  confOpt.scope = myComponent.shadowRoot; // To use into a shadow DOM of a web-component, for example
+
+  window.onload = function () {
+    const validateForm = new ValidateForm(mySubmitCallback, confOpt);
+  };
+</script>
+
+- Third add data-validate="true", and optionaly data-checkrealtime="true", to
+<form>
+  tag: ```html
+  <form id="myForm" data-validate="true" data-checkrealtime="true">
+    <!-- [...] -->
+  </form>
+</form>
+````
 
 - Four add _data-_ attributes to form fields:
 
