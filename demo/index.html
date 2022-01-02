@@ -204,13 +204,15 @@
 
           <div class="form-group">
             <label for="oddvalues">
-              Introduce un valor par:
+              Introduce un valor par mayor que 1 y menos que 9:
               <input
                 id="oddvalues"
                 name="oddvalues"
-                type="text"
+                type="number"
                 data-required="true"
                 data-tovalidate="fn:checkOdd"
+                max="9"
+                min="1"
               />
             </label>
           </div>
