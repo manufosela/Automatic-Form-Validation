@@ -290,7 +290,11 @@ export class ValidateForm {
     const target = (typeof el.getAttribute !== 'undefined') ? el : window.event.target;
     const name = target.getAttribute('name') || target.getAttribute('id') || '';
     if (this.scope.querySelector(`#warning-${name}`)) {
-      target.parentElement.removeChild(this.scope.querySelector(`#warning-${name}`));
+      if (target.parentElement.querySelector(`#warning-${name}`)) {
+        target.parentElement.removeChild(this.scope.querySelector(`#warning-${name}`));
+      } else {
+        this.scope.querySelector(`#warning-${name}`).parentElement.removeChild(this.scope.querySelector(`#warning-${name}`));
+      }
     }
     this.removeStyle(el);
     if (this.numWarnings > 0) { this.numWarnings -= 1; }
@@ -304,7 +308,7 @@ export class ValidateForm {
 
   addEventsToCheckFieldsWhenBlur(form) {
     const fields = [...form.getElementsByTagName('input'), ...form.getElementsByTagName('textarea')];
-    const selectF = [...form.getElementsByTagName('select')];
+    const selectF = [...form.getElementsByTagName('select'), ...form.getElementsByTagName('rich-inputfile')];
     fields.forEach((field) => {
       const el = this.scope.querySelector(`#${field.getAttribute('id')}`);
       const validateIsRequired = el.dataset.required || false;
@@ -328,6 +332,7 @@ export class ValidateForm {
         el.addEventListener('blur', this._onSel.bind(this), false);
       }
     });
+
   }
 
   _hiddenFieldsActions() {
