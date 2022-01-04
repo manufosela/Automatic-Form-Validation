@@ -109,6 +109,7 @@ ValidateForm.js can validate the next fields type:
 - **alphaNumericSpace** or **textspace**: alphanumeric values with spaces, text and numbers with spaces
 - **alphaNumeric** or **textnum**: alphanumeric values, text and numbers
 - **email** or **correo**: email address
+- **url**: url address
 - **iccid**: integrated circuit card identifier
 - **nummovil** or **movil** or **mobile**: Telephone number (mobile phone, not international phone)
 - **numfijo** or **fijo** or **landphone**: Telephone number (land phone)

@@ -16,6 +16,10 @@ export class VerifyUtils {
     return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,4})+$/.test(email);
   }
 
+  static isUrl(url) {
+    return /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(url);
+  }
+
   static verificaCuentaBancaria(numcuenta) {
     const parte1 = `00${numcuenta.substr(0, 8)}`;
     const control = numcuenta.substr(8, 2);
