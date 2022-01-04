@@ -41,6 +41,7 @@ export class ValidateForm {
       textnum: VerifyUtils.isAlphaNumeric,
       email: VerifyUtils.isEmail,
       correo: VerifyUtils.isEmail,
+      url: VerifyUtils.isUrl,
       iccid: VerifyUtils.checkICCID,
       nummovil: VerifyUtils.checkNumMovil,
       movil: VerifyUtils.checkNumMovil,
@@ -332,7 +333,6 @@ export class ValidateForm {
         el.addEventListener('blur', this._onSel.bind(this), false);
       }
     });
-
   }
 
   _hiddenFieldsActions() {
