@@ -11,6 +11,7 @@ export class ValidateForm {
     this.cssElementWarning = confOpt.cssElementWarning || `border:2px solid ${this.warningColor}!important;`;
     this.requiredTextContent = confOpt.requiredTextContent || '*';
     this.scope = confOpt.scope || document;
+    this.validationCallbacks = confOpt.validationCallbacks || {};
 
     this.numWarnings = 0;
     this.texts = {
@@ -138,10 +139,14 @@ export class ValidateForm {
     if (val === '' || val === null || (val !== '' && type === 'noempty')) { return true; }
     if (type === 'selected' || type === 'noempty') { return (val !== ''); }
     if (type.substr(0, 3) === 'fn:') {
-      const fn = window[type.substr(3)];
+      const callbackName = type.substr(3);
+      const fn = this.validationCallbacks[callbackName];
       if (typeof fn === 'function') {
         return fn(val);
       }
+      // eslint-disable-next-line no-console
+      console.warn(`[ValidateForm] validation callback "${callbackName}" is not registered in validationCallbacks. Register it via the confOpt.validationCallbacks allow-list.`);
+      return false;
     }
     if (type.substr(0, 5) === 'file:') {
       const validExtensions = type.substr(5).split(',');
