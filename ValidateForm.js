@@ -283,7 +283,7 @@ export class ValidateForm {
     if (this.numWarnings === 1) {
       const elementPos = el.getBoundingClientRect();
       const bodyPos = document.body.getBoundingClientRect();
-      window.scrollTo(bodyPos.top, elementPos.top);
+      window.scrollTo(0, elementPos.top - bodyPos.top);
     }
   }
 
