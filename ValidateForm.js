@@ -414,7 +414,7 @@ export class ValidateForm {
       });
     });
     toDeactivate.forEach((toDeactivateEl) => {
-      const inHid = toDeactivateEl.querySelectorAll('input[data-type="hiddenOFF]');
+      const inHid = toDeactivateEl.querySelectorAll('input[data-type="hiddenOFF"]');
       toDeactivateEl.classList.add('isHidden');
       inHid.forEach((inHidEl) => {
         const el = inHidEl;
