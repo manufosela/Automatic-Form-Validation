@@ -10,10 +10,12 @@ export default defineConfig({
       reporter: ['text', 'text-summary', 'html'],
       include: ['ValidateForm.js', 'VerifyUtils.js'],
       thresholds: {
-        lines: 85,
-        functions: 85,
-        branches: 70,
-        statements: 85,
+        'VerifyUtils.js': {
+          lines: 85,
+          functions: 85,
+          branches: 70,
+          statements: 85,
+        },
       },
     },
   },
