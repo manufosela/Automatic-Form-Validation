@@ -247,11 +247,10 @@ export class VerifyUtils {
         return -2;
       }
       // comprobacion de NIEs
-      // T
-      if (/^[T]{1}[A-Z0-9]{8}$/.test(temp)) {
-        if (a.charAt(8) === /^[T]{1}[A-Z0-9]{8}$/.test(temp)) { return 3; }
-        return -3;
-      }
+      // T: formato historico (T + 8 alfanumericos). No tiene algoritmo oficial
+      // de digito de control, asi que validamos unicamente el formato — si el
+      // outer regex del inicio dejo pasar este valor, el formato es valido.
+      if (/^[T]{1}[A-Z0-9]{8}$/.test(temp)) { return 3; }
       // XYZ
       if (/^[XYZ]{1}/.test(temp)) {
         temp = temp.replace('X', '0');
