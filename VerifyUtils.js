@@ -239,9 +239,9 @@ export class VerifyUtils {
       }
       // comprobacion de CIFs
       if (/^[ABCDEFGHJNPQRSUVW]{1}/.test(temp)) {
-        temp = `${n}`;
-        if (a.charAt(8) === String.fromCharCode(64 + n)
-            || a.charAt(8) === parseInt(temp.substring(temp.length - 1, temp.length), 10)) {
+        const controlLetter = String.fromCharCode(64 + n);
+        const controlDigit = String(n % 10);
+        if (a.charAt(8) === controlLetter || a.charAt(8) === controlDigit) {
           return 2;
         }
         return -2;
