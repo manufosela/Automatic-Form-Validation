@@ -255,12 +255,6 @@
       </form>
     </div>
 
-    <script>
-      function checkOdd(value) {
-        return value % 2 == 0;
-      }
-    </script>
-
     <script type="module">
       import { ValidateForm } from "../ValidateForm.js";
 
@@ -269,9 +263,17 @@
         return false;
       }
 
+      function checkOdd(value) {
+        return value % 2 == 0;
+      }
+
       window.onload = function () {
         /** THIS LINE VALIDATE ALL THE FORMS **/
-        const validateForm = new ValidateForm(submitFunction);
+        const validateForm = new ValidateForm(submitFunction, {
+          validationCallbacks: {
+            checkOdd,
+          },
+        });
 
         const addNewField = () => {
           const label = document.createElement("label");
