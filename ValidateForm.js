@@ -73,7 +73,7 @@ export class ValidateForm {
       const style = document.createElement('style');
       style.setAttribute('id', 'valiformStyles');
       style.setAttribute('type', 'text/css');
-      style.innerHTML = '.isHidden{ display:none; }';
+      style.textContent = '.isHidden{ display:none; }';
       document.getElementsByTagName('head')[0].appendChild(style);
     }
   }
@@ -161,7 +161,7 @@ export class ValidateForm {
       const asterisco = document.createElement('span');
       asterisco.setAttribute('id', `asterisco_${idAst}`);
       asterisco.setAttribute('style', this.asteriskStyle);
-      asterisco.innerHTML = this.requiredTextContent;
+      asterisco.textContent = this.requiredTextContent;
       if (this.scope.querySelector(`#label_${idAst}`) !== null) {
         this.scope.querySelector(`#label_${idAst}`).appendChild(asterisco);
       } else {
@@ -281,7 +281,7 @@ export class ValidateForm {
       warning = this.scope.querySelector(`#${id}`);
     }
     warning.setAttribute('style', this.cssTextWarning);
-    warning.innerHTML = msg;
+    warning.textContent = msg;
     el.parentElement.appendChild(warning);
     el.setAttribute('style', this.cssElementWarning);
     this.numWarnings += 1;

@@ -11,6 +11,23 @@ beforeEach(() => {
   `;
 });
 
+describe('ValidateForm.addWarnMesg XSS safety (AFV-TSK-0002)', () => {
+  it('renders script payloads as plain text, never executing them', () => {
+    const vf = new ValidateForm(() => true);
+    const target = document.getElementById('num');
+    const payload = '<script>window.__xss = true;</script>';
+
+    vf.addWarnMesg(target, payload);
+
+    const warning = document.getElementById('warning-num');
+    expect(warning).not.toBeNull();
+    expect(warning.textContent).toBe(payload);
+    expect(warning.querySelector('script')).toBeNull();
+    expect(globalThis.__xss).toBeUndefined();
+  });
+
+});
+
 describe('ValidateForm.validate callback allow-list (AFV-TSK-0001)', () => {
   it('invokes a registered validation callback when data-tovalidate starts with fn:', () => {
     const myEven = vi.fn((v) => Number(v) % 2 === 0);
