@@ -1,0 +1,241 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --border: #d8dde8;
+  --border-strong: #bcc3d4;
+  --text: #1f2430;
+  --text-muted: #5b6478;
+  --accent: #3b5bfd;
+  --accent-hover: #2a49e6;
+  --accent-ring: rgba(59, 91, 253, 0.18);
+  --danger: #d0342c;
+  --danger-bg: #fdecec;
+  --success: #1d8f4e;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 10px 30px rgba(24, 32, 60, 0.08);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+          Arial, "Noto Sans", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.valiform-header {
+  padding: 2rem 1rem 1rem;
+  text-align: center;
+}
+
+.valiform-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.valiform-header p {
+  margin: 0.5rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.valiform-container {
+  max-width: 680px;
+  margin: 1rem auto 3rem;
+  padding: 0 1rem;
+}
+
+form.valiform-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-group > label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.form-group .hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.form-control:hover {
+  border-color: var(--border-strong);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.radio-group,
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.radio-group label,
+.checkbox-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.radio-group input[type="radio"],
+.checkbox-group input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+fieldset {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0 0;
+}
+
+fieldset > label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+fieldset > label input[type="text"] {
+  margin-top: 0.25rem;
+}
+
+input[type="file"] {
+  padding: 0.4rem;
+  background: #fafbff;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type="file"]::file-selector-button {
+  font: inherit;
+  padding: 0.35rem 0.75rem;
+  margin-right: 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: var(--accent-hover);
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+button[type="submit"] {
+  appearance: none;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+
+button[type="submit"]:hover {
+  background: var(--accent-hover);
+}
+
+button[type="submit"]:active {
+  transform: translateY(1px);
+}
+
+/* Validation state — Valiform applies inline border style on error fields and
+   appends a <p id="warning-xxx"> sibling. We scope selectors loosely so the
+   inline styles win (important) while still giving a subtle background. */
+.form-group input[style*="border"],
+.form-group select[style*="border"],
+.form-group textarea[style*="border"] {
+  background: var(--danger-bg);
+}
+
+p[id^="warning-"] {
+  margin: 0.25rem 0 0;
+  padding: 0.4rem 0.6rem;
+  background: var(--danger-bg);
+  border-left: 3px solid var(--danger);
+  border-radius: 3px;
+  font-size: 0.85rem;
+  color: var(--danger) !important;
+}
+
+/* Required-field asterisk injected by Valiform */
+span[id^="asterisco_"] {
+  font-size: 0.95rem !important;
+}
+
+/* Small screens */
+@media (max-width: 560px) {
+  form.valiform-form {
+    padding: 1.25rem;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+  .valiform-container {
+    padding: 0;
+  }
+  .radio-group,
+  .checkbox-group {
+    gap: 0.4rem 0.8rem;
+  }
+}
