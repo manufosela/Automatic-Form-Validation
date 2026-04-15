@@ -1,6 +1,5 @@
-import resolve from 'rollup-plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
-import { terser } from 'rollup-plugin-terser';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 
 export default {
   preserveSymlinks: true,
@@ -11,8 +10,7 @@ export default {
     sourcemap: true,
   },
   plugins: [
-    resolve(),
-    babel(),
+    nodeResolve(),
     terser(),
   ],
 };
