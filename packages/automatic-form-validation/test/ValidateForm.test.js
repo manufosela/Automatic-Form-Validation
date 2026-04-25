@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ValidateForm } from '../ValidateForm.js';
+import { ValidateForm } from '../src/ValidateForm.js';
 
 beforeEach(() => {
   document.body.innerHTML = `

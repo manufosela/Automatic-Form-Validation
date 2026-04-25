@@ -1,5 +1,10 @@
-/* ValidateForm.js by @manufosela - 2015 - 2021 */
+/* ValidateForm.js by @manufosela - 2015 - 2026 */
 import { VerifyUtils } from './VerifyUtils.js';
+
+// VerifyUtils itself now delegates to @manufosela/form-validators internally.
+// ValidateForm could import from there directly, but keeping VerifyUtils as
+// the indirection layer means existing subclasses or monkey-patching keeps
+// working for v1.x consumers.
 
 export class ValidateForm {
   constructor(submitCallback, confOpt = {}) {

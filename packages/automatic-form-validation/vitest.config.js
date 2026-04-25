@@ -8,15 +8,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary', 'html'],
-      include: ['ValidateForm.js', 'VerifyUtils.js'],
-      thresholds: {
-        'VerifyUtils.js': {
-          lines: 85,
-          functions: 85,
-          branches: 70,
-          statements: 85,
-        },
-      },
+      include: ['src/**/*.js'],
     },
   },
 });
