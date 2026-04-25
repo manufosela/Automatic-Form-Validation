@@ -1,6 +1,16 @@
 import { dniLetterFor } from './_dni-letter.js';
 
 /**
+ * Canonical form: trim, uppercase, strip internal whitespace and hyphens.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeNie(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s-]/g, '').toUpperCase();
+}
+
+/**
  * Validate a Spanish NIE (Número de Identidad de Extranjero). Two formats:
  * - Modern: starts with X, Y or Z + 7 digits + control letter. The leading
  *   letter maps to a digit (X→0, Y→1, Z→2), and the resulting 8-digit

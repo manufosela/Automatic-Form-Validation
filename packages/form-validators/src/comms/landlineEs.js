@@ -11,3 +11,13 @@ export function landlineEs(value) {
   const cleaned = value.replace(/[\s-]/g, '');
   return /^(?:\+?[0-9]{2}|00[0-9]{2})?[0-9]{9}$/.test(cleaned);
 }
+
+/**
+ * Canonical form: trim, strip space/hyphen and any Spanish country prefix.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeLandlineEs(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s-]/g, '').replace(/^(?:\+34|0034|34)/, '');
+}

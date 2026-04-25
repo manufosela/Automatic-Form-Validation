@@ -1,6 +1,16 @@
 import { dniLetterFor, cifControlChars } from './_dni-letter.js';
 
 /**
+ * Canonical form: trim, uppercase, strip internal whitespace and hyphens.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeNif(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s-]/g, '').toUpperCase();
+}
+
+/**
  * Validate a Spanish NIF (Número de Identificación Fiscal). Covers:
  * - Standard NIF: 8 digits + control letter from the official table.
  * - Special NIF (KLM): starts with K, L or M; the control character is

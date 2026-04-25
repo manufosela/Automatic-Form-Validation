@@ -1,6 +1,6 @@
 {
   "name": "@manufosela/form-validators",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Pure deterministic predicates for common form-field validation: email, URL, phones, Spanish documents (NIF/NIE/CIF), banking (IBAN-style account, credit card), dates, postal codes and more. Zero dependencies, zero DOM access.",
   "main": "src/index.js",
