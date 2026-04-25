@@ -3,7 +3,7 @@ import terser from '@rollup/plugin-terser';
 
 export default {
   preserveSymlinks: true,
-  input: ['ValidateForm.js'],
+  input: ['src/ValidateForm.js'],
   output: {
     file: 'dist/ValidateForm.min.js',
     format: 'es',

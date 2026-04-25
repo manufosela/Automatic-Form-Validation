@@ -1,0 +1,60 @@
+{
+  "name": "@manufosela/form-validators",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Pure deterministic predicates for common form-field validation: email, URL, phones, Spanish documents (NIF/NIE/CIF), banking (IBAN-style account, credit card), dates, postal codes and more. Zero dependencies, zero DOM access.",
+  "main": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./aliases": {
+      "import": "./src/aliases.js",
+      "default": "./src/aliases.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "echo 'no build step'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manufosela/Automatic-Form-Validation.git",
+    "directory": "packages/form-validators"
+  },
+  "keywords": [
+    "validation",
+    "validators",
+    "form",
+    "email",
+    "url",
+    "nif",
+    "nie",
+    "cif",
+    "iban",
+    "luhn",
+    "date",
+    "predicates"
+  ],
+  "author": "@manufosela",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/manufosela/Automatic-Form-Validation/issues"
+  },
+  "homepage": "https://github.com/manufosela/Automatic-Form-Validation/tree/master/packages/form-validators#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.4",
+    "vitest": "^4.1.4"
+  }
+}

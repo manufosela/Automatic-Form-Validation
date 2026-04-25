@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { VerifyUtils } from '../VerifyUtils.js';
-import { ValidateForm } from '../ValidateForm.js';
+import { VerifyUtils } from '../src/VerifyUtils.js';
+import { ValidateForm } from '../src/ValidateForm.js';
 
 beforeEach(() => {
   document.body.innerHTML = '<input id="documento_de_identidad" value="DNI" />';

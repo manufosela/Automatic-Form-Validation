@@ -1,0 +1,59 @@
+{
+  "name": "automatic_form_validation",
+  "version": "1.7.0",
+  "type": "module",
+  "description": "Valiform.js — automatic JavaScript library to validate HTML form fields using data- HTML5 attributes. Built on top of @manufosela/form-validators.",
+  "main": "src/ValidateForm.js",
+  "exports": {
+    ".": {
+      "import": "./src/ValidateForm.js",
+      "default": "./src/ValidateForm.js"
+    },
+    "./VerifyUtils": {
+      "import": "./src/VerifyUtils.js",
+      "default": "./src/VerifyUtils.js"
+    }
+  },
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && rollup -c",
+    "start": "web-dev-server --app-index demo/index.html --node-resolve --watch --open",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manufosela/Automatic-Form-Validation.git",
+    "directory": "packages/automatic-form-validation"
+  },
+  "keywords": [
+    "forms",
+    "validate",
+    "validation",
+    "html5"
+  ],
+  "author": "@manufosela",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/manufosela/Automatic-Form-Validation/issues"
+  },
+  "homepage": "https://github.com/manufosela/Automatic-Form-Validation#readme",
+  "dependencies": {
+    "@manufosela/form-validators": "workspace:^"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "@web/dev-server": "^0.4.6",
+    "jsdom": "^29.0.2",
+    "rollup": "^4.22.4",
+    "vitest": "^4.1.4"
+  }
+}

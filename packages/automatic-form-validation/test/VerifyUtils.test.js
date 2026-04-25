@@ -1,36 +1,37 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { VerifyUtils } from '../VerifyUtils.js';
-
-function setDocumentoDeIdentidad(value) {
-  document.body.innerHTML = `<input id="documento_de_identidad" value="${value}" />`;
-}
-
-beforeEach(() => {
-  setDocumentoDeIdentidad('DNI');
-});
+import { describe, it, expect } from 'vitest';
+import { VerifyUtils } from '../src/VerifyUtils.js';
 
 describe('VerifyUtils.isInt', () => {
-  it('accepts integers', () => {
+  // v1.7.0 semantic change: numeric strings are now accepted (before, the
+  // legacy `value === parseInt(value)` always returned false for strings,
+  // which meant data-tovalidate="int" never validated DOM input values).
+  it('accepts integers (number or numeric string)', () => {
     expect(VerifyUtils.isInt(0)).toBe(true);
     expect(VerifyUtils.isInt(42)).toBe(true);
     expect(VerifyUtils.isInt(-17)).toBe(true);
+    expect(VerifyUtils.isInt('42')).toBe(true);
+    expect(VerifyUtils.isInt('-17')).toBe(true);
   });
-  it('rejects floats and strings', () => {
+  it('rejects floats and non-numeric strings', () => {
     expect(VerifyUtils.isInt(1.5)).toBe(false);
-    expect(VerifyUtils.isInt('42')).toBe(false);
+    expect(VerifyUtils.isInt('1.5')).toBe(false);
     expect(VerifyUtils.isInt(NaN)).toBe(false);
+    expect(VerifyUtils.isInt('abc')).toBe(false);
+    expect(VerifyUtils.isInt('42abc')).toBe(false);
   });
 });
 
 describe('VerifyUtils.isFloat', () => {
-  it('accepts numbers (integers are also floats by strict comparison)', () => {
+  it('accepts numbers and numeric strings', () => {
     expect(VerifyUtils.isFloat(1.5)).toBe(true);
     expect(VerifyUtils.isFloat(0)).toBe(true);
     expect(VerifyUtils.isFloat(-3.14)).toBe(true);
+    expect(VerifyUtils.isFloat('1.5')).toBe(true);
+    expect(VerifyUtils.isFloat('-3.14')).toBe(true);
   });
-  it('rejects strings', () => {
-    expect(VerifyUtils.isFloat('1.5')).toBe(false);
+  it('rejects non-numeric strings', () => {
     expect(VerifyUtils.isFloat('abc')).toBe(false);
+    expect(VerifyUtils.isFloat('')).toBe(false);
   });
 });
 
@@ -58,10 +59,10 @@ describe('VerifyUtils.isEmail', () => {
     expect(VerifyUtils.isEmail('@example.com')).toBe(false);
     expect(VerifyUtils.isEmail('no-at-symbol')).toBe(false);
   });
-  // KNOWN LATENT BUG: the `.` in the TLD group is not escaped, so inputs like
-  // 'no@domain' match because `.` absorbs the 'o' and `\w{2,4}` matches 'main'.
-  it('[known bug] regex is too permissive due to unescaped dot', () => {
-    expect(VerifyUtils.isEmail('no@domain')).toBe(true);
+  // FIXED in v1.7.0 (was a "known bug" in 1.6.x): the email regex no longer
+  // matches addresses without a proper `.tld` suffix.
+  it('rejects emails without a proper TLD (fixed)', () => {
+    expect(VerifyUtils.isEmail('no@domain')).toBe(false);
   });
 });
 
@@ -86,21 +87,16 @@ describe('VerifyUtils.verificaCuentaBancaria', () => {
 });
 
 describe('VerifyUtils.verificaNumTarjetaCredito', () => {
-  it('rejects the Visa test card (upstream regression: string vs number compare in includes)', () => {
-    expect(VerifyUtils.verificaNumTarjetaCredito('4111111111111111')).toBe(false);
+  // FIXED in v1.7.0: the legacy implementation compared the first character
+  // (a string) against numeric leading-digit set with `[3,4,5,6].includes(...)`
+  // which always returned false, so every card was rejected. Now uses Luhn
+  // properly — Visa test card is accepted.
+  it('accepts the Visa test card (Luhn-valid, fixed)', () => {
+    expect(VerifyUtils.verificaNumTarjetaCredito('4111111111111111')).toBe(true);
   });
   it('rejects obviously invalid inputs', () => {
     expect(VerifyUtils.verificaNumTarjetaCredito('1234567890123456')).toBe(false);
     expect(VerifyUtils.verificaNumTarjetaCredito('0000')).toBe(false);
-  });
-});
-
-describe('VerifyUtils._getCtrlNumberCreditCard (internal)', () => {
-  it('returns a number for a 16-digit input', () => {
-    const result = VerifyUtils._getCtrlNumberCreditCard('4111111111111111');
-    expect(typeof result).toBe('number');
-    expect(result).toBeGreaterThanOrEqual(0);
-    expect(result).toBeLessThanOrEqual(9);
   });
 });
 
@@ -142,18 +138,16 @@ describe('VerifyUtils.isDate', () => {
     expect(VerifyUtils.isDate('29/02/2024')).toBe(true);
   });
 
-  // KNOWN LATENT BUGS (tracked separately as follow-up cards):
-  // 1. ymd regex is dd-mm-yyyy, so '2024/03/15' never matches -> ymd mode is dead
-  // 2. leap-year / 30-day-month checks compare string to number with === -> never fire
-  // These tests document current (buggy) behaviour so coverage reflects reality.
-  it('[known bug] ymd format does not parse 4-digit year first', () => {
-    expect(VerifyUtils.isDate('2024/03/15', 'ymd')).toBe(false);
+  // FIXED in v1.7.0: previously known bugs in the date validator are corrected.
+  it('parses ymd format correctly (fixed)', () => {
+    expect(VerifyUtils.isDate('2024-03-15', 'ymd')).toBe(true);
+    expect(VerifyUtils.isDate('2024/03/15', 'ymd')).toBe(true);
   });
-  it('[known bug] does not reject Feb 29 on non-leap year', () => {
-    expect(VerifyUtils.isDate('29/02/2023')).toBe(true);
+  it('rejects Feb 29 on a non-leap year (fixed)', () => {
+    expect(VerifyUtils.isDate('29/02/2023')).toBe(false);
   });
-  it('[known bug] does not reject Apr 31', () => {
-    expect(VerifyUtils.isDate('31/04/2024')).toBe(true);
+  it('rejects Apr 31 (fixed)', () => {
+    expect(VerifyUtils.isDate('31/04/2024')).toBe(false);
   });
 });
 
@@ -199,11 +193,11 @@ describe('VerifyUtils.checkTelephoneNumber', () => {
 });
 
 describe('VerifyUtils.checkCodPostal', () => {
-  // KNOWN LATENT BUG: relies on isInt which strict-compares string input
-  // to parseInt result; val === parseInt(val, 10) is always false for strings,
-  // so checkCodPostal rejects every textual postal code. Tracked as a follow-up.
-  it('[known bug] rejects a valid string postal code because isInt is strict', () => {
-    expect(VerifyUtils.checkCodPostal('28001')).toBe(false);
+  // FIXED in v1.7.0: now accepts string postal codes (and properly handles
+  // codes with leading zeros like 08001).
+  it('accepts a 5-digit postal code (fixed)', () => {
+    expect(VerifyUtils.checkCodPostal('28001')).toBe(true);
+    expect(VerifyUtils.checkCodPostal('08001')).toBe(true);
   });
   it('rejects wrong length', () => {
     expect(VerifyUtils.checkCodPostal('123')).toBe(false);
@@ -220,21 +214,11 @@ describe('VerifyUtils.checkICCID', () => {
   });
 });
 
-describe('VerifyUtils._CalculateLuhn (internal)', () => {
-  it('returns a number in [0,9]', () => {
-    const n = VerifyUtils._CalculateLuhn('893407510012345678');
-    expect(typeof n).toBe('number');
-    expect(n).toBeGreaterThanOrEqual(0);
-    expect(n).toBeLessThanOrEqual(9);
-  });
-});
-
-describe('VerifyUtils.calcDigitoControl2LineaNIF', () => {
-  it('returns an integer 0-9', () => {
-    const d = VerifyUtils.calcDigitoControl2LineaNIF('12345678');
-    expect(d).toBe(8);
-  });
-});
+// v1.7.0: removed tests for internal helpers (_CalculateLuhn,
+// calcDigitoControl2LineaNIF) — they belonged to the old VerifyUtils
+// internals and are no longer exposed. The Luhn checksum and DNI digit
+// computation live inside @manufosela/form-validators and are tested in
+// that package's suite.
 
 describe('VerifyUtils._getLetraNIF (internal)', () => {
   it('returns the expected letter for known DNIs', () => {
@@ -244,10 +228,8 @@ describe('VerifyUtils._getLetraNIF (internal)', () => {
 });
 
 describe('VerifyUtils.validaNifCifNie', () => {
-  it('returns 1 early when documento_de_identidad value is PASAPORTE', () => {
-    setDocumentoDeIdentidad('PASAPORTE');
-    expect(VerifyUtils.validaNifCifNie('anything')).toBe(1);
-  });
+  // v1.7.0 semantic change: the legacy DOM lookup of #documento_de_identidad
+  // (returning 1 for value="PASAPORTE") has been removed. Pure validator now.
 
   it('returns 0 for empty input', () => {
     expect(VerifyUtils.validaNifCifNie('')).toBe(0);
