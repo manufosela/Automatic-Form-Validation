@@ -1,4 +1,16 @@
 /**
+ * Canonical form: trim and strip every space, hyphen and dot. A 16-digit
+ * card dictated as `4111 1111 1111 1111` or `4111-1111-1111-1111`
+ * becomes `4111111111111111`.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeCreditCard(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s.\-]/g, '');
+}
+
+/**
  * Validate a 16-digit credit card number using the Luhn algorithm. The
  * leading digit must be one of 3 (Amex/Diners), 4 (Visa), 5 (Mastercard)
  * or 6 (Discover) — matching the legacy `verificaNumTarjetaCredito`

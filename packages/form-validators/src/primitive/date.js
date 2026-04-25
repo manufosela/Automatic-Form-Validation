@@ -1,4 +1,24 @@
 /**
+ * Canonical form: trim and pad day/month with leading zero. Picks `/` as
+ * separator. The mode (`dmy` / `mdy` / `ymd`) is used to know which of the
+ * three numeric segments is which.
+ * @param {unknown} value
+ * @param {'dmy' | 'mdy' | 'ymd'} [mode] Default `'dmy'`.
+ * @returns {string}
+ */
+export function normalizeDate(value, mode = 'dmy') {
+  if (typeof value !== 'string') return String(value ?? '');
+  const trimmed = value.trim();
+  const m = trimmed.match(/^(\d{1,4})(?:\/|-)(\d{1,2})(?:\/|-)(\d{1,4})$/);
+  if (!m) return trimmed;
+  const [, a, b, c] = m;
+  const pad = (s, n = 2) => s.padStart(n, '0');
+  if (mode === 'mdy') return `${pad(a)}/${pad(b)}/${pad(c, 4)}`;
+  if (mode === 'ymd') return `${pad(a, 4)}/${pad(b)}/${pad(c)}`;
+  return `${pad(a)}/${pad(b)}/${pad(c, 4)}`;
+}
+
+/**
  * Validate a calendar date in `dd/mm/yyyy`, `mm/dd/yyyy` or `yyyy-mm-dd`
  * format (configurable via `mode`). Checks month range, day range, days
  * per month and leap years. Separators may be `/` or `-`.

@@ -3,29 +3,33 @@
 // canonical names) to the corresponding validator function. Keys are
 // case-insensitive when looked up via `validate()`.
 
-import { integer } from './primitive/integer.js';
-import { float } from './primitive/float.js';
-import { number } from './primitive/number.js';
+import { integer, normalizeInteger } from './primitive/integer.js';
+import { float, normalizeFloat } from './primitive/float.js';
+import { number, normalizeNumber } from './primitive/number.js';
 import {
   alpha,
   alphaWithDash,
   alphanumeric,
   alphanumericWithSpace,
+  normalizeAlpha,
+  normalizeAlphaWithDash,
+  normalizeAlphanumeric,
+  normalizeAlphanumericWithSpace,
 } from './primitive/alpha.js';
-import { date } from './primitive/date.js';
-import { fileExtension } from './file/extension.js';
-import { email } from './comms/email.js';
-import { url } from './comms/url.js';
-import { mobileEs } from './comms/mobileEs.js';
-import { landlineEs } from './comms/landlineEs.js';
-import { telephoneEs } from './comms/telephoneEs.js';
-import { postalCodeEs } from './comms/postalCodeEs.js';
-import { iccid } from './comms/iccid.js';
-import { nif } from './es/nif.js';
-import { nie } from './es/nie.js';
-import { cif } from './es/cif.js';
-import { bankAccountEs } from './es/bankAccountEs.js';
-import { creditCard } from './banking/creditCard.js';
+import { date, normalizeDate } from './primitive/date.js';
+import { fileExtension, normalizeFileExtension } from './file/extension.js';
+import { email, normalizeEmail } from './comms/email.js';
+import { url, normalizeUrl } from './comms/url.js';
+import { mobileEs, normalizeMobileEs } from './comms/mobileEs.js';
+import { landlineEs, normalizeLandlineEs } from './comms/landlineEs.js';
+import { telephoneEs, normalizeTelephoneEs } from './comms/telephoneEs.js';
+import { postalCodeEs, normalizePostalCodeEs } from './comms/postalCodeEs.js';
+import { iccid, normalizeIccid } from './comms/iccid.js';
+import { nif, normalizeNif } from './es/nif.js';
+import { nie, normalizeNie } from './es/nie.js';
+import { cif, normalizeCif } from './es/cif.js';
+import { bankAccountEs, normalizeBankAccountEs } from './es/bankAccountEs.js';
+import { creditCard, normalizeCreditCard } from './banking/creditCard.js';
 
 /**
  * Dispatch table. All keys are lowercase; lookup via {@link validate} is
@@ -100,4 +104,82 @@ export function validate(name) {
   if (typeof name !== 'string') return null;
   const fn = validators[name.toLowerCase()];
   return typeof fn === 'function' ? fn : null;
+}
+
+/**
+ * Normalizers dispatch table. Mirrors {@link validators} key-by-key, so
+ * every alias accepted by `validate(name)` also has a `normalize(name)`.
+ * @type {Readonly<Record<string, (value: unknown, ...rest: any[]) => string>>}
+ */
+export const normalizers = Object.freeze({
+  // Primitive
+  int: normalizeInteger,
+  integer: normalizeInteger,
+  float: normalizeFloat,
+  number: normalizeNumber,
+  numero: normalizeNumber,
+  alpha: normalizeAlpha,
+  alfa: normalizeAlpha,
+  text: normalizeAlpha,
+  texto: normalizeAlpha,
+  'text-': normalizeAlphaWithDash,
+  alphawithdash: normalizeAlphaWithDash,
+  alphanumeric: normalizeAlphanumeric,
+  textnum: normalizeAlphanumeric,
+  alphanumericspace: normalizeAlphanumericWithSpace,
+  alphanumericwithspace: normalizeAlphanumericWithSpace,
+  textspace: normalizeAlphanumericWithSpace,
+  date: normalizeDate,
+  fecha: normalizeDate,
+  // File
+  file: normalizeFileExtension,
+  fileextension: normalizeFileExtension,
+  // Communications
+  email: normalizeEmail,
+  correo: normalizeEmail,
+  url: normalizeUrl,
+  iccid: normalizeIccid,
+  mobile: normalizeMobileEs,
+  movil: normalizeMobileEs,
+  nummovil: normalizeMobileEs,
+  mobilees: normalizeMobileEs,
+  landphone: normalizeLandlineEs,
+  fijo: normalizeLandlineEs,
+  numfijo: normalizeLandlineEs,
+  landlinees: normalizeLandlineEs,
+  tel: normalizeTelephoneEs,
+  telefono: normalizeTelephoneEs,
+  telephone: normalizeTelephoneEs,
+  telephonees: normalizeTelephoneEs,
+  cp: normalizePostalCodeEs,
+  postalcode: normalizePostalCodeEs,
+  postalcodees: normalizePostalCodeEs,
+  // Spanish documents
+  nif: normalizeNif,
+  nie: normalizeNie,
+  cif: normalizeCif,
+  cuentabancaria: normalizeBankAccountEs,
+  accountnumber: normalizeBankAccountEs,
+  bankaccountes: normalizeBankAccountEs,
+  // Banking
+  creditcard: normalizeCreditCard,
+  tarjetacredito: normalizeCreditCard,
+});
+
+/**
+ * Look up a normalizer by name (case-insensitive). When the name is
+ * unknown, returns a fallback that just trims strings (so consumers can
+ * always call `normalize(name)(value)` safely without checking for null).
+ * @example
+ *   const cleanEmail = normalize('email');
+ *   cleanEmail(' Manu@X.IO '); // → 'manu@x.io'
+ * @param {string} name
+ * @returns {(value: unknown, ...rest: any[]) => string}
+ */
+export function normalize(name) {
+  if (typeof name === 'string') {
+    const fn = normalizers[name.toLowerCase()];
+    if (typeof fn === 'function') return fn;
+  }
+  return (value) => (typeof value === 'string' ? value.trim() : String(value ?? ''));
 }

@@ -42,3 +42,19 @@ export function alphanumericWithSpace(value) {
   if (typeof value !== 'string' || value === '') return false;
   return new RegExp(`^[0-9${LETTERS}\\s]+$`).test(value);
 }
+
+/**
+ * Canonical form for alpha-family inputs: trim + collapse internal runs of
+ * whitespace into a single space (handles dictation pauses like "Manu  Fosela").
+ * @param {unknown} value
+ * @returns {string}
+ */
+function normalizeAlphaLike(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/\s+/g, ' ');
+}
+
+export const normalizeAlpha = normalizeAlphaLike;
+export const normalizeAlphaWithDash = normalizeAlphaLike;
+export const normalizeAlphanumeric = (v) => (typeof v === 'string' ? v.trim() : String(v ?? ''));
+export const normalizeAlphanumericWithSpace = normalizeAlphaLike;

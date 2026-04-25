@@ -10,3 +10,20 @@ export function url(value) {
     value,
   );
 }
+
+/**
+ * Canonical form: trim and prepend `https://` when the user-typed value
+ * starts directly with a domain. Lowercases the scheme + host. Path,
+ * query and fragment are kept as-is.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeUrl(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  let v = value.trim();
+  if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(v)) v = `https://${v}`;
+  // Lowercase scheme + host but preserve path/query/fragment casing.
+  const m = v.match(/^([a-zA-Z][a-zA-Z0-9+.-]*:\/\/)([^/?#]+)(.*)$/);
+  if (!m) return v;
+  return `${m[1].toLowerCase()}${m[2].toLowerCase()}${m[3]}`;
+}

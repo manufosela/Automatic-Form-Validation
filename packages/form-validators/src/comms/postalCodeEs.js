@@ -10,3 +10,13 @@ export function postalCodeEs(value) {
   if (typeof value !== 'string') return false;
   return /^\d{5}$/.test(value);
 }
+
+/**
+ * Canonical form: trim only — leading zeros are significant.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizePostalCodeEs(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim();
+}

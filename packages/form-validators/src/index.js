@@ -4,37 +4,41 @@
 // touch the DOM.
 
 // Primitive
-export { integer } from './primitive/integer.js';
-export { float } from './primitive/float.js';
-export { number } from './primitive/number.js';
+export { integer, normalizeInteger } from './primitive/integer.js';
+export { float, normalizeFloat } from './primitive/float.js';
+export { number, normalizeNumber } from './primitive/number.js';
 export {
   alpha,
   alphaWithDash,
   alphanumeric,
   alphanumericWithSpace,
+  normalizeAlpha,
+  normalizeAlphaWithDash,
+  normalizeAlphanumeric,
+  normalizeAlphanumericWithSpace,
 } from './primitive/alpha.js';
-export { date } from './primitive/date.js';
+export { date, normalizeDate } from './primitive/date.js';
 
 // File
-export { fileExtension } from './file/extension.js';
+export { fileExtension, normalizeFileExtension } from './file/extension.js';
 
 // Communications
-export { email } from './comms/email.js';
-export { url } from './comms/url.js';
-export { mobileEs } from './comms/mobileEs.js';
-export { landlineEs } from './comms/landlineEs.js';
-export { telephoneEs } from './comms/telephoneEs.js';
-export { postalCodeEs } from './comms/postalCodeEs.js';
-export { iccid } from './comms/iccid.js';
+export { email, normalizeEmail } from './comms/email.js';
+export { url, normalizeUrl } from './comms/url.js';
+export { mobileEs, normalizeMobileEs } from './comms/mobileEs.js';
+export { landlineEs, normalizeLandlineEs } from './comms/landlineEs.js';
+export { telephoneEs, normalizeTelephoneEs } from './comms/telephoneEs.js';
+export { postalCodeEs, normalizePostalCodeEs } from './comms/postalCodeEs.js';
+export { iccid, normalizeIccid } from './comms/iccid.js';
 
 // Spanish documents
-export { nif } from './es/nif.js';
-export { nie } from './es/nie.js';
-export { cif } from './es/cif.js';
-export { bankAccountEs } from './es/bankAccountEs.js';
+export { nif, normalizeNif } from './es/nif.js';
+export { nie, normalizeNie } from './es/nie.js';
+export { cif, normalizeCif } from './es/cif.js';
+export { bankAccountEs, normalizeBankAccountEs } from './es/bankAccountEs.js';
 
 // Banking
-export { creditCard } from './banking/creditCard.js';
+export { creditCard, normalizeCreditCard } from './banking/creditCard.js';
 
 // Dispatch by name (with all the legacy aliases).
-export { validate, validators } from './aliases.js';
+export { validate, validators, normalize, normalizers } from './aliases.js';

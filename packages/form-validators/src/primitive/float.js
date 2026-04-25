@@ -12,3 +12,14 @@ export function float(value) {
   // Reject things like "3.14abc" that parseFloat is otherwise lenient about.
   return /^-?\d+(?:\.\d+)?$/.test(value.trim());
 }
+
+/**
+ * Canonical form: trim and accept comma as decimal separator (',' → '.').
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeFloat(value) {
+  if (typeof value === 'number') return String(value);
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(',', '.');
+}

@@ -11,3 +11,16 @@ export function integer(value) {
   if (Number.isNaN(parsed)) return false;
   return String(parsed) === value.trim();
 }
+
+/**
+ * Canonical form: trim and convert to a digit-only string. Returns the
+ * input untouched when it can't be cleanly normalized so the predicate
+ * can still report it as invalid.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeInteger(value) {
+  if (typeof value === 'number') return Number.isInteger(value) ? String(value) : String(value);
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim();
+}

@@ -10,3 +10,14 @@ export function mobileEs(value) {
   const cleaned = value.replace(/[\s-]/g, '');
   return /^(?:\+?[0-9]{2}|00[0-9]{2})?(?:6|7)[0-9]{8}$/.test(cleaned);
 }
+
+/**
+ * Canonical form: trim, strip every space/hyphen and any Spanish country
+ * prefix (`+34`, `0034`, `34`). Returns just the 9 local digits.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeMobileEs(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s-]/g, '').replace(/^(?:\+34|0034|34)/, '');
+}

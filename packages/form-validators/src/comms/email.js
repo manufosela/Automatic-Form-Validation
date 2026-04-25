@@ -10,3 +10,14 @@ export function email(value) {
   if (typeof value !== 'string' || value === '') return false;
   return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,24}$/.test(value);
 }
+
+/**
+ * Canonical form: trim, strip internal whitespace, lowercase the whole
+ * address (the local part is case-insensitive in practice).
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeEmail(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/\s+/g, '').toLowerCase();
+}
