@@ -1,4 +1,14 @@
 /**
+ * Canonical form: trim and strip every space and hyphen.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeIccid(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s-]/g, '');
+}
+
+/**
  * Validate an ICCID (SIM card identifier): 19 or 20 digits, must start
  * with the telecommunications industry prefix `89`, and the last digit
  * is a Luhn-style check digit using the variant employed by the legacy

@@ -1,4 +1,15 @@
 /**
+ * Canonical form: trim and strip every space and hyphen so a CCC dictated
+ * with separators (`2100 0418 4502 0000 5678`) becomes a 20-digit string.
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function normalizeBankAccountEs(value) {
+  if (typeof value !== 'string') return String(value ?? '');
+  return value.trim().replace(/[\s-]/g, '');
+}
+
+/**
  * Validate a Spanish bank account number in the legacy CCC format
  * (20 digits: 4 bank + 4 branch + 2 control + 10 account). The two control
  * digits are computed from the bank+branch and account parts respectively
