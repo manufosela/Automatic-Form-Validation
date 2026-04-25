@@ -1,43 +1,25 @@
 {
-  "name": "automatic_form_validation",
-  "version": "1.6.0",
+  "name": "automatic-form-validation-monorepo",
+  "version": "0.0.0",
+  "private": true,
   "type": "module",
-  "description": "Valiform.js is an automatic javascript library to validate HTML form fields using data- HTML5 attributes. It has little more than 12Kb. Without dependencies, like jQuery, but compatible with them.",
-  "main": "ValidateForm.js",
+  "description": "Monorepo: @manufosela/form-validators (pure predicates, MIT) + automatic_form_validation (auto-binding UI lib, Apache-2.0).",
   "scripts": {
-    "build": "rm -rf build && mkdir build && rollup -c",
-    "start": "web-dev-server --app-index demo/index.html --node-resolve --watch --open",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "build": "pnpm -r --filter \"./packages/*\" run build",
+    "test": "pnpm -r --filter \"./packages/*\" run test",
+    "test:coverage": "pnpm -r --filter \"./packages/*\" run test:coverage"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/manufosela/Automatic-Form-Validation.git"
   },
-  "keywords": [
-    "forms",
-    "validate"
-  ],
   "author": "@manufosela",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/manufosela/Automatic-Form-Validation/issues"
   },
   "homepage": "https://github.com/manufosela/Automatic-Form-Validation#readme",
-  "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.3.0",
-    "@rollup/plugin-terser": "^1.0.0",
-    "@vitest/coverage-v8": "^4.1.4",
-    "@web/dev-server": "^0.4.6",
-    "eslint": "^7.13.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.21.5",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "jsdom": "^29.0.2",
-    "rollup": "^4.22.4",
-    "vitest": "^4.1.4"
+  "engines": {
+    "node": ">=20"
   }
 }
